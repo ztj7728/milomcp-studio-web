@@ -4,4 +4,4 @@ out
 dist
 build
 *.md
-.claude/
+/.claude/
