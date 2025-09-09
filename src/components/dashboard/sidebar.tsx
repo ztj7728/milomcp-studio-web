@@ -1,0 +1,143 @@
+'use client'
+
+import Link from 'next/link'
+import { usePathname } from 'next/navigation'
+import { cn } from '@/lib/utils'
+import { Button } from '@/components/ui/button'
+import { ScrollArea } from '@/components/ui/scroll-area'
+import { Separator } from '@/components/ui/separator'
+import {
+  Home,
+  Settings,
+  Users,
+  FileText,
+  Wrench,
+  Activity,
+  User,
+  ChevronLeft,
+  ChevronRight,
+} from 'lucide-react'
+import { useState } from 'react'
+
+interface SidebarProps {
+  className?: string
+}
+
+const navigationItems = [
+  {
+    title: 'Dashboard',
+    href: '/dashboard',
+    icon: Home,
+  },
+  {
+    title: 'Tools',
+    href: '/dashboard/tools',
+    icon: Wrench,
+  },
+  {
+    title: 'Files',
+    href: '/dashboard/files',
+    icon: FileText,
+  },
+  {
+    title: 'Activity',
+    href: '/dashboard/activity',
+    icon: Activity,
+  },
+]
+
+const adminItems = [
+  {
+    title: 'Users',
+    href: '/dashboard/users',
+    icon: Users,
+  },
+  {
+    title: 'Settings',
+    href: '/dashboard/settings',
+    icon: Settings,
+  },
+]
+
+export function Sidebar({ className }: SidebarProps) {
+  const pathname = usePathname()
+  const [collapsed, setCollapsed] = useState(false)
+
+  return (
+    <div className={cn('pb-12', className)}>
+      <div className="space-y-4 py-4">
+        <div className="px-3 py-2">
+          <div className="flex items-center justify-between">
+            <h2
+              className={cn(
+                'mb-2 px-4 text-lg font-semibold tracking-tight',
+                collapsed && 'hidden'
+              )}
+            >
+              MiloMCP Studio
+            </h2>
+            <Button
+              variant="ghost"
+              size="sm"
+              onClick={() => setCollapsed(!collapsed)}
+              className="ml-auto"
+            >
+              {collapsed ? (
+                <ChevronRight className="h-4 w-4" />
+              ) : (
+                <ChevronLeft className="h-4 w-4" />
+              )}
+            </Button>
+          </div>
+          <div className="space-y-1">
+            {navigationItems.map((item) => (
+              <Button
+                key={item.href}
+                variant={pathname === item.href ? 'secondary' : 'ghost'}
+                className={cn(
+                  'w-full justify-start',
+                  collapsed && 'justify-center px-2'
+                )}
+                asChild
+              >
+                <Link href={item.href}>
+                  <item.icon className="mr-2 h-4 w-4" />
+                  {!collapsed && item.title}
+                </Link>
+              </Button>
+            ))}
+          </div>
+        </div>
+        <Separator />
+        <div className="px-3 py-2">
+          <h2
+            className={cn(
+              'mb-2 px-4 text-lg font-semibold tracking-tight',
+              collapsed && 'hidden'
+            )}
+          >
+            Administration
+          </h2>
+          <div className="space-y-1">
+            {adminItems.map((item) => (
+              <Button
+                key={item.href}
+                variant={pathname === item.href ? 'secondary' : 'ghost'}
+                className={cn(
+                  'w-full justify-start',
+                  collapsed && 'justify-center px-2'
+                )}
+                asChild
+              >
+                <Link href={item.href}>
+                  <item.icon className="mr-2 h-4 w-4" />
+                  {!collapsed && item.title}
+                </Link>
+              </Button>
+            ))}
+          </div>
+        </div>
+      </div>
+    </div>
+  )
+}
