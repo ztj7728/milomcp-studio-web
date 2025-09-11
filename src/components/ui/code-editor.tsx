@@ -1,6 +1,6 @@
 'use client'
 
-import { useEffect, useState } from 'react'
+import { useEffect, useState, useRef } from 'react'
 import dynamic from 'next/dynamic'
 import { useTheme } from 'next-themes'
 import { Button } from './button'
@@ -45,10 +45,28 @@ export function CodeEditor({
   const [hasChanges, setHasChanges] = useState(false)
   const { theme } = useTheme()
 
+  // Use refs to store current values for the keyboard shortcut
+  const editorValueRef = useRef(editorValue)
+  const hasChangesRef = useRef(hasChanges)
+  const onSaveRef = useRef(onSave)
+
   useEffect(() => {
     setEditorValue(value)
     setHasChanges(false)
   }, [value])
+
+  // Keep refs updated
+  useEffect(() => {
+    editorValueRef.current = editorValue
+  }, [editorValue])
+
+  useEffect(() => {
+    hasChangesRef.current = hasChanges
+  }, [hasChanges])
+
+  useEffect(() => {
+    onSaveRef.current = onSave
+  }, [onSave])
 
   const handleEditorDidMount = (editor: any, monaco: any) => {
     // Configure editor options
@@ -65,8 +83,8 @@ export function CodeEditor({
 
     // Add save shortcut (Ctrl+S / Cmd+S)
     editor.addCommand(monaco.KeyMod.CtrlCmd | monaco.KeyCode.KeyS, () => {
-      if (onSave && hasChanges) {
-        onSave(editorValue)
+      if (onSaveRef.current && hasChangesRef.current) {
+        onSaveRef.current(editorValueRef.current)
         setHasChanges(false)
       }
     })

@@ -156,21 +156,21 @@ src/
 - [x] Add code formatting and validation features
 - [x] Create unsaved changes tracking with confirmation dialogs
 
-### Phase 5: Token & Environment Management (Week 5)
+### Phase 5: Token & Environment Management (Week 5) ✅ COMPLETED
 
-#### 5.1 API Token Management
-- [ ] Build token listing interface
-- [ ] Create token generation form
-- [ ] Implement token permissions editor
-- [ ] Add token usage statistics
-- [ ] Build token revocation functionality
+#### 5.1 API Token Management ✅
+- [x] Build token listing interface
+- [x] Create token generation form
+- [x] Implement token permissions editor
+- [x] Add token usage statistics
+- [x] Build token revocation functionality
 
-#### 5.2 Environment Variables
-- [ ] Create environment variables manager
-- [ ] Implement secure variable storage
-- [ ] Add variable validation
-- [ ] Build import/export functionality
-- [ ] Create variable usage tracking
+#### 5.2 Environment Variables ✅
+- [x] Create environment variables manager
+- [x] Implement secure variable storage
+- [x] Add variable validation
+- [x] Build import/export functionality (basic add/edit/delete)
+- [x] Create variable usage tracking (display functionality)
 
 ### Phase 6: Advanced Features & Polish (Week 6)
 

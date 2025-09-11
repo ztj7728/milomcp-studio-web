@@ -407,16 +407,16 @@ export default function FilesPage() {
               </div>
             )
           ) : (
-            <div className="flex items-center justify-center h-full bg-gray-50">
+            <div className="flex items-center justify-center h-full bg-gray-900">
               <div className="text-center">
                 <div className="text-6xl mb-4">📝</div>
-                <h2 className="text-xl font-medium text-gray-700 mb-2">
+                <h2 className="text-xl font-medium text-gray-100 mb-2">
                   Welcome to Workspace
                 </h2>
-                <p className="text-gray-500 mb-4">
+                <p className="text-gray-300 mb-4">
                   Select a file from the sidebar to start editing
                 </p>
-                <div className="text-sm text-gray-400">
+                <div className="text-sm text-gray-500">
                   <p>💡 Tip: Use Ctrl+S to save your changes</p>
                 </div>
               </div>

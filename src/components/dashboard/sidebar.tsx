@@ -14,6 +14,7 @@ import {
   Wrench,
   Activity,
   User,
+  Key,
   ChevronLeft,
   ChevronRight,
 } from 'lucide-react'
@@ -38,6 +39,16 @@ const navigationItems = [
     title: 'Files',
     href: '/dashboard/files',
     icon: FileText,
+  },
+  {
+    title: 'Tokens',
+    href: '/dashboard/tokens',
+    icon: Key,
+  },
+  {
+    title: 'Environment',
+    href: '/dashboard/environment',
+    icon: Settings,
   },
   {
     title: 'Activity',
