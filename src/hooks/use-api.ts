@@ -1,7 +1,6 @@
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query'
 import { apiClient } from '@/lib/api'
 import { executeToolViaJsonRpc } from '@/lib/jsonrpc'
-import { getStoredApiToken } from '@/lib/token-storage'
 
 // Query keys
 export const queryKeys = {
@@ -61,15 +60,15 @@ export function useExecuteTool() {
     mutationFn: async ({
       toolName,
       parameters,
+      apiToken,
     }: {
       toolName: string
       parameters: Record<string, any>
+      apiToken: string
     }) => {
-      const apiToken = getStoredApiToken()
-
       if (!apiToken) {
         throw new Error(
-          'No API token available. Please create an API token first.'
+          'No API token provided. Please select an API token first.'
         )
       }
 

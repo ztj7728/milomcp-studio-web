@@ -56,8 +56,16 @@ class ApiClient {
     if (!response.ok) {
       if (response.status === 401) {
         // Redirect to login for authentication issues
+        console.log('API returned 401, redirecting to login...')
         window.location.href = '/login'
         throw new Error('Authentication required')
+      }
+
+      if (response.status === 403) {
+        // Forbidden - likely refresh token expired
+        console.log('API returned 403, redirecting to login...')
+        window.location.href = '/login'
+        throw new Error('Session expired')
       }
 
       const error = await response.text()

@@ -48,7 +48,7 @@ import {
   Shield,
 } from 'lucide-react'
 import { useTokens, useCreateToken, useDeleteToken } from '@/hooks/use-tokens'
-import { useTools } from '@/hooks/use-tools'
+import { useTools } from '@/hooks/use-api'
 
 export default function TokensPage() {
   const [isCreateOpen, setIsCreateOpen] = useState(false)
@@ -252,8 +252,9 @@ export default function TokensPage() {
                           <div className="text-sm text-gray-500">
                             Loading tools...
                           </div>
-                        ) : Array.isArray(tools) && tools.length > 0 ? (
-                          tools.map((tool) => (
+                        ) : Array.isArray((tools as any)?.data) &&
+                          (tools as any).data.length > 0 ? (
+                          (tools as any).data.map((tool: any) => (
                             <div
                               key={tool.name}
                               className="flex items-center space-x-2"

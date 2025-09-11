@@ -5,6 +5,7 @@ import { config } from './config'
 
 async function refreshAccessToken(token: JWT): Promise<JWT> {
   try {
+    console.log('Attempting to refresh access token...')
     const url = `${config.apiUrl}/api/refresh`
 
     const response = await fetch(url, {
@@ -20,15 +21,22 @@ async function refreshAccessToken(token: JWT): Promise<JWT> {
     const refreshedData = await response.json()
 
     if (!response.ok) {
+      console.error(
+        'Refresh token request failed:',
+        response.status,
+        refreshedData
+      )
       throw refreshedData
     }
 
     if (refreshedData.status === 'success' && refreshedData.data) {
+      console.log('Access token refreshed successfully')
       return {
         ...token,
         accessToken: refreshedData.data.accessToken,
         accessTokenExpires: Date.now() + 15 * 60 * 1000, // 15 minutes
         refreshToken: refreshedData.data.refreshToken ?? token.refreshToken,
+        error: undefined, // Clear any previous errors
       }
     }
 
@@ -36,9 +44,13 @@ async function refreshAccessToken(token: JWT): Promise<JWT> {
   } catch (error) {
     console.error('Error refreshing access token:', error)
 
+    // When refresh fails (refresh token expired), clear tokens and mark for logout
     return {
       ...token,
-      error: 'RefreshAccessTokenError',
+      error: 'RefreshAccessTokenError' as const,
+      accessToken: undefined,
+      refreshToken: undefined,
+      accessTokenExpires: undefined,
     }
   }
 }
@@ -111,6 +123,13 @@ export const authOptions: NextAuthOptions = {
         token.refreshToken = user.refreshToken
         token.role = user.role
         token.accessTokenExpires = Date.now() + 15 * 60 * 1000 // 15 minutes
+        delete token.error
+        return token
+      }
+
+      // If there's a refresh error, keep the token but mark it as invalid
+      if (token.error === 'RefreshAccessTokenError') {
+        console.log('Refresh token expired, keeping error state')
         return token
       }
 
@@ -123,7 +142,10 @@ export const authOptions: NextAuthOptions = {
       }
 
       // Access token has expired, try to update it
-      return refreshAccessToken(token)
+      const refreshedToken = await refreshAccessToken(token)
+
+      // Return the refreshed token (even if it has an error)
+      return refreshedToken
     },
     async session({ session, token }) {
       if (token) {

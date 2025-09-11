@@ -30,8 +30,7 @@ import {
   CardTitle,
 } from '@/components/ui/card'
 import { useExecuteTool } from '@/hooks/use-api'
-import { ApiTokenSetup } from './api-token-setup'
-import { hasStoredApiToken } from '@/lib/token-storage'
+import { useTokens } from '@/hooks/use-tokens'
 import {
   Play,
   Loader2,
@@ -39,6 +38,7 @@ import {
   AlertCircle,
   Copy,
   Key,
+  ExternalLink,
 } from 'lucide-react'
 
 interface ToolExecutionDialogProps {
@@ -63,26 +63,19 @@ export function ToolExecutionDialog({
     useState<ExecutionResult | null>(null)
   const [isExecuting, setIsExecuting] = useState(false)
   const [formData, setFormData] = useState<Record<string, any>>({})
-  const [showTokenSetup, setShowTokenSetup] = useState(false)
-  const [hasApiToken, setHasApiToken] = useState(false)
+  const [selectedTokenId, setSelectedTokenId] = useState<string>('')
 
   const executeTool = useExecuteTool()
+  const { data: tokens, isLoading: tokensLoading } = useTokens()
 
-  // Check for API token when dialog opens
-  const checkApiToken = () => {
-    const hasToken = hasStoredApiToken()
-    setHasApiToken(hasToken)
-    if (!hasToken && open) {
-      setShowTokenSetup(true)
-    }
-  }
-
-  // Check token on mount and when dialog opens
+  // Reset form when dialog opens/closes
   useEffect(() => {
     if (open) {
-      checkApiToken()
+      setFormData({})
+      setExecutionResult(null)
+      setSelectedTokenId('')
     }
-  }, [open]) // Remove checkApiToken from dependencies to avoid linting issue
+  }, [open])
 
   // Don't render if no tool is provided
   if (!tool) {
@@ -91,6 +84,16 @@ export function ToolExecutionDialog({
 
   const onSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
+
+    if (!selectedTokenId) {
+      setExecutionResult({
+        success: false,
+        error: 'Please select an API token to execute the tool',
+        executionTime: 0,
+      })
+      return
+    }
+
     setIsExecuting(true)
     setExecutionResult(null)
     const startTime = Date.now()
@@ -99,6 +102,7 @@ export function ToolExecutionDialog({
       const result = await executeTool.mutateAsync({
         toolName: tool.name,
         parameters: formData,
+        apiToken: selectedTokenId,
       })
 
       setExecutionResult({
@@ -194,43 +198,101 @@ export function ToolExecutionDialog({
   }
 
   return (
-    <>
-      <Dialog open={open} onOpenChange={onOpenChange}>
-        <DialogContent className="max-w-4xl max-h-[90vh] overflow-y-auto">
-          <DialogHeader>
-            <DialogTitle className="flex items-center gap-2">
-              <Play className="h-5 w-5" />
-              Execute Tool: {tool.name}
-            </DialogTitle>
-            <DialogDescription>
-              {tool.description ||
-                'Configure parameters and execute this tool.'}
-            </DialogDescription>
-          </DialogHeader>
+    <Dialog open={open} onOpenChange={onOpenChange}>
+      <DialogContent className="max-w-4xl max-h-[90vh] overflow-y-auto">
+        <DialogHeader>
+          <DialogTitle className="flex items-center gap-2">
+            <Play className="h-5 w-5" />
+            Execute Tool: {tool.name}
+          </DialogTitle>
+          <DialogDescription>
+            {tool.description || 'Configure parameters and execute this tool.'}
+          </DialogDescription>
+        </DialogHeader>
 
-          {!hasApiToken ? (
-            <Card className="border-yellow-200 bg-yellow-50 dark:bg-yellow-950">
-              <CardHeader>
-                <CardTitle className="text-sm text-yellow-800 dark:text-yellow-200 flex items-center gap-2">
-                  <Key className="h-4 w-4" />
-                  API Token Required
-                </CardTitle>
-              </CardHeader>
-              <CardContent>
-                <p className="text-sm text-yellow-700 dark:text-yellow-300 mb-4">
-                  To execute tools, you need to set up an API token for JSON-RPC
-                  communication.
-                </p>
-                <Button
-                  onClick={() => setShowTokenSetup(true)}
-                  variant="outline"
-                >
-                  <Key className="mr-2 h-4 w-4" />
-                  Set Up API Token
-                </Button>
-              </CardContent>
-            </Card>
-          ) : (
+        <div className="space-y-6">
+          {/* API Token Selection */}
+          <Card>
+            <CardHeader>
+              <CardTitle className="text-sm flex items-center gap-2">
+                <Key className="h-4 w-4" />
+                API Token Selection
+              </CardTitle>
+              <CardDescription>
+                Choose an API token to authenticate your tool execution request
+              </CardDescription>
+            </CardHeader>
+            <CardContent>
+              {tokensLoading ? (
+                <div className="flex items-center gap-2">
+                  <Loader2 className="h-4 w-4 animate-spin" />
+                  <span className="text-sm">Loading tokens...</span>
+                </div>
+              ) : !tokens || tokens.length === 0 ? (
+                <div className="space-y-3">
+                  <div className="flex items-center gap-2 text-yellow-600 dark:text-yellow-400">
+                    <AlertCircle className="h-4 w-4" />
+                    <span className="text-sm">No API tokens available</span>
+                  </div>
+                  <p className="text-sm text-muted-foreground">
+                    You need to create at least one API token to execute tools.
+                  </p>
+                  <Button
+                    variant="outline"
+                    onClick={() => window.open('/dashboard/tokens', '_blank')}
+                  >
+                    <ExternalLink className="mr-2 h-4 w-4" />
+                    Create API Token
+                  </Button>
+                </div>
+              ) : (
+                <div className="space-y-3">
+                  <Label htmlFor="token-select">Select API Token</Label>
+                  <Select
+                    value={selectedTokenId}
+                    onValueChange={setSelectedTokenId}
+                  >
+                    <SelectTrigger id="token-select">
+                      <SelectValue placeholder="Choose an API token..." />
+                    </SelectTrigger>
+                    <SelectContent>
+                      {tokens.map((token) => {
+                        let parsedPermissions: string[] = []
+                        try {
+                          parsedPermissions = JSON.parse(
+                            token.permissions || '[]'
+                          )
+                        } catch (e) {
+                          parsedPermissions = []
+                        }
+
+                        return (
+                          <SelectItem key={token.token} value={token.token}>
+                            <div className="flex items-center justify-between w-full">
+                              <span>{token.name}</span>
+                              <Badge variant="outline" className="ml-2">
+                                {parsedPermissions.includes('*')
+                                  ? 'All Tools'
+                                  : `${parsedPermissions.length} tools`}
+                              </Badge>
+                            </div>
+                          </SelectItem>
+                        )
+                      })}
+                    </SelectContent>
+                  </Select>
+                  {!selectedTokenId && (
+                    <p className="text-sm text-muted-foreground">
+                      Please select a token to enable tool execution
+                    </p>
+                  )}
+                </div>
+              )}
+            </CardContent>
+          </Card>
+
+          {/* Show parameters form only if token is selected or there are no tokens but we want to show the disabled state */}
+          {(selectedTokenId || (tokens && tokens.length === 0)) && (
             <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
               {/* Parameters Form */}
               <div className="space-y-4">
@@ -252,7 +314,10 @@ export function ToolExecutionDialog({
                       >
                         Cancel
                       </Button>
-                      <Button type="submit" disabled={isExecuting}>
+                      <Button
+                        type="submit"
+                        disabled={isExecuting || !selectedTokenId}
+                      >
                         {isExecuting ? (
                           <>
                             <Loader2 className="mr-2 h-4 w-4 animate-spin" />
@@ -279,7 +344,10 @@ export function ToolExecutionDialog({
                       >
                         Cancel
                       </Button>
-                      <Button onClick={onSubmit} disabled={isExecuting}>
+                      <Button
+                        onClick={onSubmit}
+                        disabled={isExecuting || !selectedTokenId}
+                      >
                         {isExecuting ? (
                           <>
                             <Loader2 className="mr-2 h-4 w-4 animate-spin" />
@@ -359,19 +427,8 @@ export function ToolExecutionDialog({
               </div>
             </div>
           )}
-        </DialogContent>
-      </Dialog>
-
-      <ApiTokenSetup
-        open={showTokenSetup}
-        onOpenChange={(open) => {
-          setShowTokenSetup(open)
-          if (!open) {
-            // Recheck token status when setup is closed
-            checkApiToken()
-          }
-        }}
-      />
-    </>
+        </div>
+      </DialogContent>
+    </Dialog>
   )
 }
