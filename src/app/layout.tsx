@@ -20,6 +20,11 @@ export default function RootLayout({
   return (
     <html lang="en" suppressHydrationWarning>
       <body className={inter.className}>
+        <script
+          dangerouslySetInnerHTML={{
+            __html: `window.__RUNTIME_CONFIG__ = "__RUNTIME_CONFIG_PLACEHOLDER__"`,
+          }}
+        ></script>
         <ThemeProvider
           attribute="class"
           defaultTheme="system"

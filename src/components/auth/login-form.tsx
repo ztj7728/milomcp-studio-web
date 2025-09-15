@@ -37,16 +37,28 @@ export function LoginForm({ callbackUrl = '/dashboard' }: LoginFormProps) {
         username: formData.username,
         password: formData.password,
         callbackUrl: callbackUrl,
-        redirect: true,
+        redirect: false,
       })
 
-      // This code won't run because redirect: true will redirect automatically
-      // Keeping error handling for any unexpected cases
       if (result?.error) {
-        setError('Invalid username or password')
+        if (result.error === 'CredentialsSignin') {
+          setError(
+            'Invalid username or password. Please check your credentials and try again.'
+          )
+        } else {
+          setError('An error occurred during login. Please try again.')
+        }
+        setLoading(false)
+      } else if (result?.ok) {
+        // Successfully signed in, redirect manually
+        router.push(callbackUrl)
+      } else {
+        setError('An unexpected error occurred. Please try again.')
+        setLoading(false)
       }
     } catch (err) {
-      setError('An error occurred during login')
+      console.error('Login error:', err)
+      setError('An error occurred during login. Please try again.')
       setLoading(false)
     }
   }
@@ -90,7 +102,7 @@ export function LoginForm({ callbackUrl = '/dashboard' }: LoginFormProps) {
             />
           </div>
           {error && (
-            <div className="text-sm text-red-600 bg-red-50 p-3 rounded-md">
+            <div className="text-sm text-red-600 bg-red-50 border border-red-200 p-3 rounded-md">
               {error}
             </div>
           )}

@@ -11,7 +11,13 @@
     "type-check": "tsc --noEmit",
     "format": "prettier --write .",
     "format:check": "prettier --check .",
-    "prepare": "husky"
+    "prepare": "husky",
+    "docker:build": "docker build -t milomcp-studio .",
+    "docker:run": "docker run -p 3000:3000 --env-file .env milomcp-studio",
+    "docker:up": "docker-compose up -d",
+    "docker:down": "docker-compose down",
+    "docker:logs": "docker-compose logs -f",
+    "docker:rebuild": "docker-compose up -d --build"
   },
   "keywords": [],
   "author": "",

@@ -3,18 +3,17 @@
 import { useSession } from 'next-auth/react'
 import { useRouter, useSearchParams } from 'next/navigation'
 import { useEffect, Suspense } from 'react'
-import { LoginForm } from '@/components/auth/login-form'
+import { SignupForm } from '@/components/auth/signup-form'
 import Link from 'next/link'
 
 // Disable static generation for this page
 export const dynamic = 'force-dynamic'
 
-function LoginPageContent() {
+function SignupPageContent() {
   const { data: session, status } = useSession()
   const router = useRouter()
   const searchParams = useSearchParams()
   const callbackUrl = searchParams.get('callbackUrl') || '/dashboard'
-  const message = searchParams.get('message')
 
   useEffect(() => {
     if (status === 'authenticated') {
@@ -37,31 +36,26 @@ function LoginPageContent() {
   return (
     <div className="space-y-6">
       <div className="text-center">
-        <h1 className="text-3xl font-bold">MiloMCP Studio</h1>
+        <h1 className="text-3xl font-bold">Create Account</h1>
         <p className="text-muted-foreground mt-2">
-          Modern web interface for the MiloMCP platform
+          Join MiloMCP Studio and start building with powerful tools
         </p>
       </div>
-      {message && (
-        <div className="text-sm text-green-600 bg-green-50 border border-green-200 p-3 rounded-md text-center">
-          {message}
-        </div>
-      )}
-      <LoginForm callbackUrl={callbackUrl} />
+      <SignupForm />
       <div className="text-center text-sm text-muted-foreground">
-        Don&apos;t have an account?{' '}
+        Already have an account?{' '}
         <Link
-          href="/signup"
+          href="/login"
           className="font-medium text-primary hover:underline"
         >
-          Sign up
+          Sign in
         </Link>
       </div>
     </div>
   )
 }
 
-export default function LoginPage() {
+export default function SignupPage() {
   return (
     <Suspense
       fallback={
@@ -70,7 +64,7 @@ export default function LoginPage() {
         </div>
       }
     >
-      <LoginPageContent />
+      <SignupPageContent />
     </Suspense>
   )
 }

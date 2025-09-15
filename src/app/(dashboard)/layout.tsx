@@ -3,6 +3,9 @@ import { Sidebar } from '@/components/dashboard/sidebar'
 import { ThemeToggle } from '@/components/theme-toggle'
 import { AuthGuard } from '@/components/auth/auth-guard'
 
+// Disable static generation for dashboard layout
+export const dynamic = 'force-dynamic'
+
 export default function DashboardLayout({
   children,
 }: {

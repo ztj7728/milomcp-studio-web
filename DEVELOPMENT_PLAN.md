@@ -2,7 +2,7 @@
 
 ## Project Overview
 
-Building a modern, enterprise-grade web interface for the MiloMCP multi-user platform. The frontend will provide an elegant UI for user management, tool execution, workspace management, and real-time MCP communication.
+Building a modern, enterprise-grade web interface for the MiloMCP multi-user platform. The frontend will provide an elegant UI for comprehensive user management, role-based access control, user-isolated workspace management, and real-time MCP communication with per-user permissions.
 
 ## Technology Stack
 
@@ -41,13 +41,14 @@ src/
 ├── app/                    # Next.js App Router
 │   ├── (auth)/            # Auth layout group
 │   │   ├── login/
-│   │   └── signup/
+│   │   └── signup/         # User registration pages
 │   ├── (dashboard)/       # Dashboard layout group
 │   │   ├── dashboard/
 │   │   ├── tools/
-│   │   ├── workspace/
-│   │   ├── tokens/
-│   │   ├── users/         # Admin only
+│   │   ├── workspace/     # User-isolated file management
+│   │   ├── tokens/        # User's API tokens
+│   │   ├── environment/   # User's environment variables
+│   │   ├── users/         # Admin only - user management
 │   │   └── settings/
 │   ├── api/               # API routes (proxy to backend)
 │   ├── globals.css
@@ -55,7 +56,7 @@ src/
 │   └── page.tsx
 ├── components/            # Reusable components
 │   ├── ui/               # shadcn/ui components
-│   ├── auth/             # Authentication components
+│   ├── auth/             # Authentication components (login-form, signup-form, etc.)
 │   ├── dashboard/        # Dashboard-specific components
 │   ├── tools/            # Tool execution components
 │   ├── workspace/        # File management components
@@ -81,11 +82,15 @@ src/
 - [x] Set up Tailwind CSS and shadcn/ui
 - [x] Configure environment variables
 
-#### 1.2 Authentication System ✅
+#### 1.2 Authentication System ✅ COMPLETED
 - [x] Set up NextAuth.js with JWT strategy
 - [x] Implement login/logout functionality
 - [x] Create auth middleware for protected routes
-- [x] Build login and signup pages
+- [x] Build login page
+- [x] Build user registration interface (signup page)
+- [x] Implement user registration API integration
+- [x] Add registration form validation and error handling
+- [x] Create registration success/confirmation flow
 - [x] Implement token refresh mechanism
 
 #### 1.3 API Integration Layer ✅
@@ -110,12 +115,14 @@ src/
 - [x] Implement recent activity feed
 - [x] Add quick action buttons
 
-#### 2.3 User Management (Admin)
-- [x] Build users listing page
-- [x] Create user creation form (ready for backend integration)
-- [x] Implement user deletion functionality
-- [x] Add user search and filtering
-- [x] Build user detail view
+#### 2.3 Multi-User Architecture & Admin Features
+- [x] Build admin users listing page with full user management
+- [x] Create user creation form with role assignment
+- [x] Implement user deletion functionality with confirmation
+- [x] Add user search, filtering, and role-based views
+- [x] Build user detail view with activity tracking
+- [ ] Implement role-based UI restrictions (hide admin features from regular users)
+- [ ] Create user activity monitoring and audit logs
 
 ### Phase 3: Tool Management & Execution (Week 3) ✅
 
@@ -133,60 +140,72 @@ src/
 - [x] Add execution result display with JSON formatting
 - [x] Build comprehensive error handling for tool failures
 
-#### 3.3 Tool Permissions & Token Management ✅
-- [x] Implement API token-based authentication for tools
-- [x] Create API token setup and management interface
-- [x] Add secure token storage with localStorage
-- [x] Build execution logs viewer with filtering and search
-- [x] Create permission-based access control via API tokens
+#### 3.3 User-Scoped Tool Permissions & Token Management ✅
+- [x] Implement user-specific API token-based authentication for tools
+- [x] Create per-user API token setup and management interface
+- [x] Add secure token storage with localStorage (user-scoped)
+- [x] Build user-specific execution logs viewer with filtering and search
+- [x] Create permission-based access control via user's API tokens
+- [ ] Add admin view of all users' tool usage and permissions
+- [ ] Implement tool access restrictions based on user roles
 
-### Phase 4: Workspace & File Management (Week 4) ✅ COMPLETED
+### Phase 4: User-Isolated Workspace & File Management (Week 4) ✅ COMPLETED
 
-#### 4.1 File Browser ✅
-- [x] Create file browser interface with tree view and context menus
-- [x] Implement file upload/download functionality
-- [x] Add file preview capabilities for text, code, and image files
-- [x] Build file search functionality with real-time results
-- [x] Create folder management (create, rename, delete operations)
+#### 4.1 User-Scoped File Browser ✅
+- [x] Create user-isolated file browser interface with tree view and context menus
+- [x] Implement user-specific file upload/download functionality
+- [x] Add file preview capabilities for text, code, and image files (user's files only)
+- [x] Build file search functionality with real-time results (scoped to user's workspace)
+- [x] Create folder management (create, rename, delete operations) within user's workspace
+- [ ] Add admin capability to view/manage all users' workspaces
+- [ ] Implement workspace quotas and usage monitoring per user
 
-#### 4.2 Code Editor Integration ✅
-- [x] Integrate Monaco Editor with dynamic imports
+#### 4.2 User-Scoped Code Editor Integration ✅
+- [x] Integrate Monaco Editor with dynamic imports for user's files
 - [x] Add syntax highlighting for common languages (JS/TS/Python/JSON/MD/etc.)
-- [x] Implement file editing and saving with API integration
+- [x] Implement file editing and saving with API integration (user's workspace only)
 - [x] Add code formatting and validation features
 - [x] Create unsaved changes tracking with confirmation dialogs
+- [ ] Add collaborative editing indicators (show if other admins are viewing/editing)
+- [ ] Implement file locking mechanism for concurrent editing protection
 
-### Phase 5: Token & Environment Management (Week 5) ✅ COMPLETED
+### Phase 5: User-Scoped Token & Environment Management (Week 5) ✅ COMPLETED
 
-#### 5.1 API Token Management ✅
-- [x] Build token listing interface
-- [x] Create token generation form
-- [x] Implement token permissions editor
-- [x] Add token usage statistics
-- [x] Build token revocation functionality
+#### 5.1 User-Specific API Token Management ✅
+- [x] Build user's token listing interface (shows only their tokens)
+- [x] Create user-scoped token generation form with permission selection
+- [x] Implement token permissions editor (user can only edit their tokens)
+- [x] Add token usage statistics for user's tokens
+- [x] Build token revocation functionality for user's tokens
+- [ ] Add admin view of all users' tokens and usage patterns
+- [ ] Implement token sharing/delegation between users (if needed)
 
-#### 5.2 Environment Variables ✅
-- [x] Create environment variables manager
-- [x] Implement secure variable storage
-- [x] Add variable validation
-- [x] Build import/export functionality (basic add/edit/delete)
-- [x] Create variable usage tracking (display functionality)
+#### 5.2 User-Isolated Environment Variables ✅
+- [x] Create user-specific environment variables manager
+- [x] Implement secure variable storage (isolated per user)
+- [x] Add variable validation for user's environment
+- [x] Build import/export functionality for user's variables (basic add/edit/delete)
+- [x] Create variable usage tracking (display functionality for user's vars)
+- [ ] Add admin capability to view/manage system-wide environment defaults
+- [ ] Implement environment variable templates and inheritance
 
 ### Phase 6: Advanced Features & Polish (Week 6)
 
-#### 6.1 Real-time Features
-- [ ] Implement WebSocket connection status
-- [ ] Add real-time notifications
-- [ ] Create live activity monitoring
-- [ ] Build collaborative features
-- [ ] Add system health indicators
+#### 6.1 Multi-User Real-time Features
+- [ ] Implement per-user WebSocket connection status
+- [ ] Add real-time notifications (user-specific and system-wide)
+- [ ] Create live activity monitoring (per-user and admin overview)
+- [ ] Build collaborative features with user presence indicators
+- [ ] Add system health indicators with user-specific metrics
+- [ ] Implement real-time user session management and activity tracking
 
-#### 6.2 Settings & Preferences
-- [ ] Build user preferences panel
-- [ ] Implement theme customization
-- [ ] Add keyboard shortcuts
-- [ ] Create backup/restore functionality
-- [ ] Build export capabilities
+#### 6.2 User-Specific Settings & Preferences
+- [ ] Build user preferences panel (personalized settings)
+- [ ] Implement theme customization per user
+- [ ] Add user-customizable keyboard shortcuts
+- [ ] Create user data backup/restore functionality
+- [ ] Build user-specific export capabilities (workspace, settings, etc.)
+- [ ] Add admin global settings management (system defaults, policies)
 
 #### 6.3 Mobile Responsiveness
 - [ ] Optimize for tablet/mobile views
@@ -208,10 +227,11 @@ User Login → JWT Access Token (15min) + Refresh Token (30d)
 ### State Management Structure
 ```typescript
 // Zustand stores
-- authStore: user session, tokens, permissions
-- toolStore: available tools, execution history
-- workspaceStore: files, current workspace state
-- uiStore: theme, sidebar state, notifications
+- authStore: user session, tokens, permissions, role (admin/user)
+- toolStore: available tools, user-specific execution history, permission checks
+- workspaceStore: user-isolated files, current workspace state, quotas
+- uiStore: user-specific theme, sidebar state, notifications
+- adminStore: admin-only features, user management, system-wide monitoring
 ```
 
 ### API Integration Patterns
@@ -234,10 +254,12 @@ User Login → JWT Access Token (15min) + Refresh Token (30d)
 
 ### API Security
 - [ ] Request/response validation with Zod
-- [ ] Rate limiting awareness
-- [ ] Proper error message handling
-- [ ] File upload security
-- [ ] User permission enforcement
+- [ ] Rate limiting awareness (per-user and global)
+- [ ] Proper error message handling (avoid leaking user data)
+- [ ] File upload security (user-isolated storage)
+- [ ] Strict user permission enforcement and role-based access control
+- [ ] User data isolation validation (prevent cross-user data access)
+- [ ] Admin privilege escalation protection
 
 ## Performance Optimization
 
@@ -248,11 +270,12 @@ User Login → JWT Access Token (15min) + Refresh Token (30d)
 - [ ] Bundle size optimization
 - [ ] Lazy loading for heavy components
 
-### Caching Strategy
-- [ ] React Query caching configuration
-- [ ] Static asset caching
-- [ ] API response caching
-- [ ] Service Worker implementation (future)
+### Multi-User Caching Strategy
+- [ ] React Query caching configuration with user-scoped cache keys
+- [ ] Static asset caching (shared across users)
+- [ ] API response caching with user isolation (prevent cache poisoning)
+- [ ] User-specific data invalidation strategies
+- [ ] Service Worker implementation with user context (future)
 
 ## Testing Strategy
 
@@ -263,15 +286,19 @@ User Login → JWT Access Token (15min) + Refresh Token (30d)
 - [ ] API client testing
 
 ### Integration Testing
-- [ ] Authentication flow testing
-- [ ] API integration testing
-- [ ] Form submission testing
-- [ ] Navigation testing
+- [ ] Multi-user authentication flow testing
+- [ ] Role-based API integration testing (admin vs user permissions)
+- [ ] User-isolated data access testing
+- [ ] Form submission testing with user context
+- [ ] Navigation testing with role-based restrictions
+- [ ] Cross-user data isolation verification
 
 ### E2E Testing (Future)
-- [ ] Playwright setup
-- [ ] Critical user journey testing
-- [ ] Cross-browser testing
+- [ ] Playwright setup with multi-user test scenarios
+- [ ] Critical user journey testing (admin and regular user flows)
+- [ ] Cross-browser testing with different user roles
+- [ ] User isolation testing (verify users cannot access each other's data)
+- [ ] Admin privilege testing (verify admin-only features work correctly)
 
 ## Deployment Strategy
 
@@ -351,11 +378,13 @@ main (production)
 - [ ] Performance monitoring
 - [ ] API error tracking
 
-### Usage Analytics
-- [ ] User behavior tracking
-- [ ] Feature usage metrics
-- [ ] Performance metrics
-- [ ] Conversion tracking
+### Multi-User Usage Analytics
+- [ ] Per-user behavior tracking (with privacy compliance)
+- [ ] Feature usage metrics by user role (admin vs regular users)
+- [ ] Performance metrics with user context
+- [ ] User conversion and retention tracking
+- [ ] Admin dashboard for system-wide usage analytics
+- [ ] User activity patterns and workspace utilization metrics
 
 ## Documentation
 
@@ -365,11 +394,13 @@ main (production)
 - [ ] Deployment guide
 - [ ] Contributing guidelines
 
-### User Documentation
-- [ ] User manual
-- [ ] Feature tutorials
-- [ ] Troubleshooting guide
-- [ ] FAQ section
+### Multi-User Documentation
+- [ ] User manual (separate sections for regular users and admins)
+- [ ] Role-specific feature tutorials
+- [ ] Multi-user troubleshooting guide
+- [ ] FAQ section covering user management and permissions
+- [ ] Admin guide for user management and system administration
+- [ ] Security and privacy guidelines for multi-user environments
 
 ## Success Metrics
 
@@ -380,26 +411,32 @@ main (production)
 - [ ] Bundle size < 500KB initial load
 - [ ] API response time < 500ms
 
-### User Experience Metrics
-- [ ] User satisfaction score > 8/10
-- [ ] Task completion rate > 95%
-- [ ] Error rate < 1%
-- [ ] User adoption rate tracking
-- [ ] Feature usage analytics
+### Multi-User Experience Metrics
+- [ ] User satisfaction score > 8/10 (tracked by user role)
+- [ ] Task completion rate > 95% (admin and regular user tasks)
+- [ ] Error rate < 1% (with user context for better debugging)
+- [ ] User adoption and retention rate tracking
+- [ ] Feature usage analytics by user role and permissions
+- [ ] Admin efficiency metrics (user management, system monitoring)
+- [ ] User workspace utilization and productivity metrics
 
 ## Risk Mitigation
 
 ### Technical Risks
-- [ ] API compatibility issues → Comprehensive testing
-- [ ] Performance bottlenecks → Monitoring and optimization
-- [ ] Security vulnerabilities → Security audits
-- [ ] Browser compatibility → Cross-browser testing
+- [ ] API compatibility issues → Comprehensive multi-user testing
+- [ ] Performance bottlenecks with multiple users → Load testing and optimization
+- [ ] Security vulnerabilities (user isolation) → Multi-user security audits
+- [ ] Browser compatibility → Cross-browser testing with different user scenarios
+- [ ] User data isolation breaches → Strict access control testing
+- [ ] Admin privilege escalation → Role-based security validation
 
 ### Business Risks
-- [ ] User adoption → User feedback loops
-- [ ] Feature complexity → Progressive disclosure
-- [ ] Maintenance overhead → Good documentation
-- [ ] Scalability issues → Performance monitoring
+- [ ] User adoption → Role-specific user feedback loops and onboarding
+- [ ] Multi-user feature complexity → Progressive disclosure with role-based UI
+- [ ] Maintenance overhead → Good documentation and automated testing
+- [ ] Multi-user scalability issues → Performance monitoring and load testing
+- [ ] User management complexity → Intuitive admin interfaces
+- [ ] Data privacy compliance → Regular audits and user data protection measures
 
 ---
 

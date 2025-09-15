@@ -45,6 +45,27 @@ export interface LoginResponse {
   refreshToken: string
 }
 
+export interface SignupRequest {
+  username: string
+  password: string
+  name: string
+}
+
+export interface SignupResponse {
+  status: 'success' | 'error'
+  data?: {
+    id: string
+    username: string
+    name: string
+    isAdmin: boolean
+    createdAt: string
+  }
+  error?: {
+    code: string
+    message: string
+  }
+}
+
 export interface User {
   id: string
   username: string

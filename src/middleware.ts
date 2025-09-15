@@ -7,12 +7,24 @@ export default withAuth(
     const token = req.nextauth.token
 
     // Redirect authenticated users away from auth pages
-    if (token && pathname.startsWith('/login')) {
+    if (
+      token &&
+      (pathname.startsWith('/login') || pathname.startsWith('/signup'))
+    ) {
       return NextResponse.redirect(new URL('/dashboard', req.url))
     }
 
     // Admin-only routes
     if (pathname.startsWith('/admin') && token?.role !== 'admin') {
+      return NextResponse.redirect(new URL('/dashboard', req.url))
+    }
+
+    // Admin-only dashboard routes
+    if (pathname.startsWith('/dashboard/users') && token?.role !== 'admin') {
+      return NextResponse.redirect(new URL('/dashboard', req.url))
+    }
+
+    if (pathname.startsWith('/dashboard/settings') && token?.role !== 'admin') {
       return NextResponse.redirect(new URL('/dashboard', req.url))
     }
 
@@ -24,7 +36,11 @@ export default withAuth(
         const { pathname } = req.nextUrl
 
         // Public routes
-        if (pathname === '/' || pathname.startsWith('/login')) {
+        if (
+          pathname === '/' ||
+          pathname.startsWith('/login') ||
+          pathname.startsWith('/signup')
+        ) {
           return true
         }
 

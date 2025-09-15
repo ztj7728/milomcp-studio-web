@@ -37,8 +37,6 @@ async function proxyRequest(
   method: string
 ) {
   try {
-    const session = await getServerSession(authOptions)
-
     // Await params in Next.js 15+
     const resolvedParams = await params
     const pathSegments = resolvedParams.path || []
@@ -48,8 +46,18 @@ async function proxyRequest(
 
     const targetUrl = `${config.apiUrl}/${targetPath}${queryString}`
 
+    // Define public endpoints that don't require authentication
+    const publicEndpoints = ['api/sign-up', 'api/login']
+    const isPublicEndpoint = publicEndpoints.some(
+      (endpoint) =>
+        targetPath === endpoint || targetPath.startsWith(endpoint + '/')
+    )
+
+    const session = await getServerSession(authOptions)
+
     console.log(`🔄 Proxying ${method} request to: ${targetUrl}`)
     console.log(`🔐 Session available: ${!!session}`)
+    console.log(`🌐 Public endpoint: ${isPublicEndpoint}`)
     console.log(`🎫 Access token available: ${!!session?.accessToken}`)
 
     const headers: Record<string, string> = {}
@@ -62,7 +70,8 @@ async function proxyRequest(
       headers['Content-Type'] = 'application/json'
     }
 
-    if (session?.accessToken) {
+    // Add authorization header for authenticated requests (not for public endpoints)
+    if (session?.accessToken && !isPublicEndpoint) {
       headers.Authorization = `Bearer ${session.accessToken}`
       console.log(`🎫 Added Authorization header`)
     }

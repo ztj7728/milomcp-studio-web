@@ -1,5 +1,6 @@
 'use client'
 
+import { runtimeConfig } from '@/lib/runtime-config'
 import { useState } from 'react'
 import { useSession } from 'next-auth/react'
 import {
@@ -52,8 +53,8 @@ export default function DashboardPage() {
     if (!selectedToken) return ''
 
     const baseUrl =
-      process.env.NEXT_PUBLIC_API_URL_DISPLAY ||
-      process.env.NEXT_PUBLIC_API_URL ||
+      runtimeConfig.getApiUrlDisplay() ||
+      runtimeConfig.getApiUrl() ||
       'http://localhost:3000'
     const apiUrl = `${baseUrl}/sse`
 

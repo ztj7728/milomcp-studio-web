@@ -19,6 +19,7 @@ import {
   ChevronRight,
 } from 'lucide-react'
 import { useState } from 'react'
+import { useAuth } from '@/hooks/useAuth'
 
 interface SidebarProps {
   className?: string
@@ -73,6 +74,7 @@ const adminItems = [
 export function Sidebar({ className }: SidebarProps) {
   const pathname = usePathname()
   const [collapsed, setCollapsed] = useState(false)
+  const { isAdmin } = useAuth()
 
   return (
     <div className={cn('pb-12', className)}>
@@ -119,35 +121,39 @@ export function Sidebar({ className }: SidebarProps) {
             ))}
           </div>
         </div>
-        <Separator />
-        <div className="px-3 py-2">
-          <h2
-            className={cn(
-              'mb-2 px-4 text-lg font-semibold tracking-tight',
-              collapsed && 'hidden'
-            )}
-          >
-            Administration
-          </h2>
-          <div className="space-y-1">
-            {adminItems.map((item) => (
-              <Button
-                key={item.href}
-                variant={pathname === item.href ? 'secondary' : 'ghost'}
+        {isAdmin && (
+          <>
+            <Separator />
+            <div className="px-3 py-2">
+              <h2
                 className={cn(
-                  'w-full justify-start',
-                  collapsed && 'justify-center px-2'
+                  'mb-2 px-4 text-lg font-semibold tracking-tight',
+                  collapsed && 'hidden'
                 )}
-                asChild
               >
-                <Link href={item.href}>
-                  <item.icon className="mr-2 h-4 w-4" />
-                  {!collapsed && item.title}
-                </Link>
-              </Button>
-            ))}
-          </div>
-        </div>
+                Administration
+              </h2>
+              <div className="space-y-1">
+                {adminItems.map((item) => (
+                  <Button
+                    key={item.href}
+                    variant={pathname === item.href ? 'secondary' : 'ghost'}
+                    className={cn(
+                      'w-full justify-start',
+                      collapsed && 'justify-center px-2'
+                    )}
+                    asChild
+                  >
+                    <Link href={item.href}>
+                      <item.icon className="mr-2 h-4 w-4" />
+                      {!collapsed && item.title}
+                    </Link>
+                  </Button>
+                ))}
+              </div>
+            </div>
+          </>
+        )}
       </div>
     </div>
   )

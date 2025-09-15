@@ -1,0 +1,25 @@
+version: '3.8'
+
+services:
+  milomcp-studio:
+    image: zhoutijie/milomcp-studio-web:0.0.1
+    build:
+      context: .
+      dockerfile: Dockerfile
+    ports:
+      - "${PORT:-3000}:3000"
+    env_file:
+      - .env
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:3000/api/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 40s
+    networks:
+      - milomcp-network
+
+networks:
+  milomcp-network:
+    driver: bridge
