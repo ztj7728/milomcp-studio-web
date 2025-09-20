@@ -1,6 +1,7 @@
 {
   "name": "milomcp-studio-web",
   "version": "1.0.0",
+  "type": "module",
   "description": "",
   "scripts": {
     "dev": "next dev",

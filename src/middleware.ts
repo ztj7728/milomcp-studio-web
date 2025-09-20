@@ -9,7 +9,7 @@ const intlMiddleware = createIntlMiddleware({
   locales,
   defaultLocale,
   localePrefix: 'always',
-  localeDetection: false  // Disable automatic locale detection
+  localeDetection: false, // Disable automatic locale detection
 })
 
 function stripLocaleFromPathname(pathname: string): string {
@@ -36,31 +36,40 @@ export default withAuth(
 
     // Get the current locale from pathname
     const currentLocale = getLocaleFromPathname(pathname)
-    
+
     // Handle old routes without locale prefix BEFORE intl middleware (but let intl handle root)
-    if (!pathname.startsWith('/en') && !pathname.startsWith('/zh-CN') && pathname !== '/' && !pathname.startsWith('/_next') && !pathname.startsWith('/api') && !pathname.startsWith('/favicon')) {
-      let redirectPath: string
-      redirectPath = `/en${pathname}` // Always redirect to English for old routes
+    if (
+      !pathname.startsWith('/en') &&
+      !pathname.startsWith('/zh-CN') &&
+      pathname !== '/' &&
+      !pathname.startsWith('/_next') &&
+      !pathname.startsWith('/api') &&
+      !pathname.startsWith('/favicon')
+    ) {
+      const redirectPath = `/en${pathname}` // Always redirect to English for old routes
       console.log('Redirecting old route to locale-aware:', redirectPath)
       return NextResponse.redirect(new URL(redirectPath, req.url))
     }
-    
+
     // Handle internationalization
     const intlResponse = intlMiddleware(req as NextRequest)
-    
+
     // If intl middleware returns a response (redirect), use it
     if (intlResponse && intlResponse.status !== 200) {
-      console.log('Intl middleware redirect:', intlResponse.headers.get('location'))
+      console.log(
+        'Intl middleware redirect:',
+        intlResponse.headers.get('location')
+      )
       return intlResponse
     }
 
     // Get pathname without locale for auth checks
     const pathWithoutLocale = stripLocaleFromPathname(pathname)
-    
-    console.log('Path analysis:', { 
-      original: pathname, 
-      withoutLocale: pathWithoutLocale, 
-      locale: currentLocale 
+
+    console.log('Path analysis:', {
+      original: pathname,
+      withoutLocale: pathWithoutLocale,
+      locale: currentLocale,
     })
 
     // IMPORTANT: Allow homepage access without authentication
@@ -72,7 +81,8 @@ export default withAuth(
     // Redirect authenticated users away from auth pages
     if (
       token &&
-      (pathWithoutLocale.startsWith('/login') || pathWithoutLocale.startsWith('/signup'))
+      (pathWithoutLocale.startsWith('/login') ||
+        pathWithoutLocale.startsWith('/signup'))
     ) {
       const redirectPath = addLocaleToPath('/dashboard', currentLocale)
       console.log('Redirecting authenticated user to dashboard:', redirectPath)
@@ -87,24 +97,30 @@ export default withAuth(
     }
 
     // Admin-only dashboard routes
-    if (pathWithoutLocale.startsWith('/dashboard/users') && token?.role !== 'admin') {
+    if (
+      pathWithoutLocale.startsWith('/dashboard/users') &&
+      token?.role !== 'admin'
+    ) {
       const redirectPath = addLocaleToPath('/dashboard', currentLocale)
       return NextResponse.redirect(new URL(redirectPath, req.url))
     }
 
-    if (pathWithoutLocale.startsWith('/dashboard/settings') && token?.role !== 'admin') {
+    if (
+      pathWithoutLocale.startsWith('/dashboard/settings') &&
+      token?.role !== 'admin'
+    ) {
       const redirectPath = addLocaleToPath('/dashboard', currentLocale)
       return NextResponse.redirect(new URL(redirectPath, req.url))
     }
 
     // Create a response that preserves the locale
     const response = intlResponse || NextResponse.next()
-    
+
     // Set a header with the detected locale for debugging
     if (response) {
       response.headers.set('x-detected-locale', currentLocale)
     }
-    
+
     return response
   },
   {
@@ -113,10 +129,10 @@ export default withAuth(
         const { pathname } = req.nextUrl
         const pathWithoutLocale = stripLocaleFromPathname(pathname)
 
-        console.log('Auth check:', { 
-          pathname, 
-          pathWithoutLocale, 
-          hasToken: !!token 
+        console.log('Auth check:', {
+          pathname,
+          pathWithoutLocale,
+          hasToken: !!token,
         })
 
         // IMPORTANT: Homepage should be public

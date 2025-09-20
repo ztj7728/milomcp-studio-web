@@ -61,7 +61,7 @@ export function AuthGuard({ children, requireAuth = true }: AuthGuardProps) {
       router.push(`/${locale}/login`)
       return
     }
-  }, [session, status, router, requireAuth])
+  }, [session, status, router, requireAuth, locale])
 
   // Show loading while checking auth
   if (requireAuth && status === 'loading') {
