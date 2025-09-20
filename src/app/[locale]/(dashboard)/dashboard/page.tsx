@@ -4,6 +4,7 @@ import { runtimeConfig } from '@/lib/runtime-config'
 import { useState } from 'react'
 import { useSession } from 'next-auth/react'
 import { useParams } from 'next/navigation'
+import { useTranslations } from 'next-intl'
 import {
   Card,
   CardContent,
@@ -42,6 +43,7 @@ export default function DashboardPage() {
   const { data: tools, isLoading: toolsLoading, error: toolsError } = useTools()
   const { data: files, isLoading: filesLoading, error: filesError } = useFiles()
   const { data: tokens, isLoading: tokensLoading } = useTokens()
+  const t = useTranslations('dashboard')
 
   const toolCount = Array.isArray((tools as any)?.data)
     ? (tools as any).data.length
@@ -93,25 +95,23 @@ export default function DashboardPage() {
     <div className="space-y-6">
       <div>
         <h2 className="text-3xl font-bold tracking-tight">
-          Welcome back, {session?.user?.name}!
+          {t('welcome', { name: session?.user?.name || 'User' })}
         </h2>
-        <p className="text-muted-foreground">
-          Here&apos;s what&apos;s happening with your MiloMCP workspace.
-        </p>
+        <p className="text-muted-foreground">{t('subtitle')}</p>
       </div>
 
       <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
         <Card>
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
             <CardTitle className="text-sm font-medium">
-              Active Sessions
+              {t('activeSessions')}
             </CardTitle>
             <Activity className="h-4 w-4 text-muted-foreground" />
           </CardHeader>
           <CardContent>
             <div className="text-2xl font-bold">1</div>
             <p className="text-xs text-muted-foreground">
-              Current active session
+              {t('currentActiveSession')}
             </p>
           </CardContent>
         </Card>
@@ -119,7 +119,7 @@ export default function DashboardPage() {
         <Card>
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
             <CardTitle className="text-sm font-medium">
-              Available Tools
+              {t('availableTools')}
             </CardTitle>
             <Wrench className="h-4 w-4 text-muted-foreground" />
           </CardHeader>
@@ -128,7 +128,7 @@ export default function DashboardPage() {
               {toolsLoading ? '...' : toolsError ? '!' : toolCount}
             </div>
             <p className="text-xs text-muted-foreground">
-              {toolsError ? 'Error loading tools' : 'Tools ready for use'}
+              {toolsError ? t('errorLoadingTools') : t('toolsReadyForUse')}
             </p>
           </CardContent>
         </Card>
@@ -136,7 +136,7 @@ export default function DashboardPage() {
         <Card>
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
             <CardTitle className="text-sm font-medium">
-              Files in Workspace
+              {t('filesInWorkspace')}
             </CardTitle>
             <FileText className="h-4 w-4 text-muted-foreground" />
           </CardHeader>
@@ -145,19 +145,21 @@ export default function DashboardPage() {
               {filesLoading ? '...' : filesError ? '!' : fileCount}
             </div>
             <p className="text-xs text-muted-foreground">
-              {filesError ? 'Error loading files' : 'Total workspace files'}
+              {filesError ? t('errorLoadingFiles') : t('totalWorkspaceFiles')}
             </p>
           </CardContent>
         </Card>
 
         <Card>
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium">Last Activity</CardTitle>
+            <CardTitle className="text-sm font-medium">
+              {t('lastActivity')}
+            </CardTitle>
             <Clock className="h-4 w-4 text-muted-foreground" />
           </CardHeader>
           <CardContent>
             <div className="text-2xl font-bold">2h</div>
-            <p className="text-xs text-muted-foreground">2 hours ago</p>
+            <p className="text-xs text-muted-foreground">2 {t('hoursAgo')}</p>
           </CardContent>
         </Card>
       </div>
@@ -167,27 +169,27 @@ export default function DashboardPage() {
           <CardHeader>
             <CardTitle className="flex items-center gap-2">
               <Settings className="h-5 w-5" />
-              MCP Server Configuration
+              {t('mcpServerConfig')}
             </CardTitle>
-            <CardDescription>
-              Generate configuration for MCP clients like Claude Desktop
-            </CardDescription>
+            <CardDescription>{t('mcpServerDescription')}</CardDescription>
           </CardHeader>
           <CardContent className="space-y-4">
             <div className="space-y-2">
-              <label className="text-sm font-medium">Select API Token:</label>
+              <label className="text-sm font-medium">
+                {t('selectApiToken')}
+              </label>
               {tokensLoading ? (
                 <div className="h-10 bg-muted rounded animate-pulse" />
               ) : !tokens || tokens.length === 0 ? (
                 <div className="text-sm text-muted-foreground p-3 border rounded bg-muted/50">
-                  No API tokens available. Create one in the{' '}
+                  {t('noApiTokens')}{' '}
                   <a
                     href={`/${locale}/dashboard/tokens`}
                     className="text-primary hover:underline"
                   >
-                    Tokens page
+                    {t('tokensPage')}
                   </a>{' '}
-                  first.
+                  {t('createOne')}
                 </div>
               ) : (
                 <Select
@@ -195,7 +197,7 @@ export default function DashboardPage() {
                   onValueChange={setSelectedTokenId}
                 >
                   <SelectTrigger>
-                    <SelectValue placeholder="Choose an API token..." />
+                    <SelectValue placeholder={t('chooseApiToken')} />
                   </SelectTrigger>
                   <SelectContent>
                     {tokens.map((token) => (
@@ -211,30 +213,32 @@ export default function DashboardPage() {
             {selectedToken && (
               <div className="space-y-2">
                 <div className="flex items-center justify-between">
-                  <label className="text-sm font-medium">Configuration:</label>
+                  <label className="text-sm font-medium">
+                    {t('configuration')}
+                  </label>
                   <Button
                     size="sm"
                     variant="outline"
                     onClick={() => copyToClipboard(generateMcpConfig())}
                   >
                     <Copy className="h-4 w-4 mr-2" />
-                    {copied ? 'Copied!' : 'Copy'}
+                    {copied ? t('copied') : t('copy')}
                   </Button>
                 </div>
                 <pre className="bg-muted p-4 rounded-lg text-xs overflow-x-auto">
                   <code>{generateMcpConfig()}</code>
                 </pre>
                 <p className="text-xs text-muted-foreground">
-                  Add this configuration to your Claude Desktop settings at{' '}
+                  {t('claudeDesktopInstructions')}{' '}
                   <code className="bg-muted px-1 py-0.5 rounded text-xs">
                     ~/Library/Application
                     Support/Claude/claude_desktop_config.json
                   </code>{' '}
-                  (macOS) or{' '}
+                  {t('macOSPath')} {t('or')}{' '}
                   <code className="bg-muted px-1 py-0.5 rounded text-xs">
                     %APPDATA%\Claude\claude_desktop_config.json
                   </code>{' '}
-                  (Windows)
+                  {t('windowsPath')}
                 </p>
               </div>
             )}
@@ -245,32 +249,38 @@ export default function DashboardPage() {
       <div className="grid gap-4 md:grid-cols-2">
         <Card>
           <CardHeader>
-            <CardTitle>Recent Activity</CardTitle>
-            <CardDescription>
-              Your latest actions in the workspace
-            </CardDescription>
+            <CardTitle>{t('recentActivity')}</CardTitle>
+            <CardDescription>{t('latestActions')}</CardDescription>
           </CardHeader>
           <CardContent>
             <div className="space-y-4">
               <div className="flex items-center space-x-4">
                 <div className="w-2 h-2 bg-blue-500 rounded-full" />
                 <div>
-                  <p className="text-sm font-medium">Executed file_read tool</p>
-                  <p className="text-xs text-muted-foreground">2 hours ago</p>
+                  <p className="text-sm font-medium">{t('executedFileRead')}</p>
+                  <p className="text-xs text-muted-foreground">
+                    2 {t('hoursAgo')}
+                  </p>
                 </div>
               </div>
               <div className="flex items-center space-x-4">
                 <div className="w-2 h-2 bg-green-500 rounded-full" />
                 <div>
-                  <p className="text-sm font-medium">Created new workspace</p>
-                  <p className="text-xs text-muted-foreground">5 hours ago</p>
+                  <p className="text-sm font-medium">
+                    {t('createdNewWorkspace')}
+                  </p>
+                  <p className="text-xs text-muted-foreground">
+                    5 {t('hoursAgo')}
+                  </p>
                 </div>
               </div>
               <div className="flex items-center space-x-4">
                 <div className="w-2 h-2 bg-orange-500 rounded-full" />
                 <div>
-                  <p className="text-sm font-medium">Updated API token</p>
-                  <p className="text-xs text-muted-foreground">1 day ago</p>
+                  <p className="text-sm font-medium">{t('updatedApiToken')}</p>
+                  <p className="text-xs text-muted-foreground">
+                    1 {t('dayAgo')}
+                  </p>
                 </div>
               </div>
             </div>
@@ -279,43 +289,45 @@ export default function DashboardPage() {
 
         <Card>
           <CardHeader>
-            <CardTitle>System Status</CardTitle>
-            <CardDescription>
-              Current status of MiloMCP services
-            </CardDescription>
+            <CardTitle>{t('systemStatus')}</CardTitle>
+            <CardDescription>{t('mcpServicesStatus')}</CardDescription>
           </CardHeader>
           <CardContent>
             <div className="space-y-4">
               <div className="flex items-center justify-between">
                 <div className="flex items-center space-x-2">
                   <Server className="h-4 w-4 text-muted-foreground" />
-                  <span className="text-sm">API Server</span>
+                  <span className="text-sm">{t('apiServer')}</span>
                 </div>
                 <div className="flex items-center space-x-2">
                   <div className="w-2 h-2 bg-green-500 rounded-full" />
-                  <span className="text-sm text-muted-foreground">Online</span>
+                  <span className="text-sm text-muted-foreground">
+                    {t('online')}
+                  </span>
                 </div>
               </div>
               <div className="flex items-center justify-between">
                 <div className="flex items-center space-x-2">
                   <Wifi className="h-4 w-4 text-muted-foreground" />
-                  <span className="text-sm">WebSocket</span>
+                  <span className="text-sm">{t('webSocket')}</span>
                 </div>
                 <div className="flex items-center space-x-2">
                   <div className="w-2 h-2 bg-green-500 rounded-full" />
                   <span className="text-sm text-muted-foreground">
-                    Connected
+                    {t('connected')}
                   </span>
                 </div>
               </div>
               <div className="flex items-center justify-between">
                 <div className="flex items-center space-x-2">
                   <Database className="h-4 w-4 text-muted-foreground" />
-                  <span className="text-sm">Database</span>
+                  <span className="text-sm">{t('database')}</span>
                 </div>
                 <div className="flex items-center space-x-2">
                   <div className="w-2 h-2 bg-green-500 rounded-full" />
-                  <span className="text-sm text-muted-foreground">Healthy</span>
+                  <span className="text-sm text-muted-foreground">
+                    {t('healthy')}
+                  </span>
                 </div>
               </div>
             </div>

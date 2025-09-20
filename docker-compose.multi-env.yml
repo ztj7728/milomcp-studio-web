@@ -1,0 +1,76 @@
+version: '3.8'
+
+services:
+  # Development environment
+  milomcp-studio-dev:
+    image: zhoutijie/milomcp-studio-web:0.0.1
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: milomcp-studio-dev
+    ports:
+      - "3000:3000"
+    env_file:
+      - .env  # Uses .env for development
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:3000/api/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 40s
+    networks:
+      - milomcp-network
+
+  # Production environment (same image, different config)
+  milomcp-studio-prod:
+    image: zhoutijie/milomcp-studio-web:0.0.1
+    container_name: milomcp-studio-prod
+    ports:
+      - "3001:3000"
+    env_file:
+      - .env.docker-test  # Uses different env file
+    restart: unless-stopped
+    profiles: ["production"]  # Only start when production profile is used
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:3000/api/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 40s
+    networks:
+      - milomcp-network
+
+  # Test environment with inline environment variables
+  milomcp-studio-test:
+    image: zhoutijie/milomcp-studio-web:0.0.1
+    container_name: milomcp-studio-test
+    ports:
+      - "3002:3000"
+    environment:
+      - NEXT_PUBLIC_API_URL=https://test-inline.example.com
+      - NEXT_PUBLIC_WS_URL=wss://test-inline.example.com/ws
+      - NEXT_PUBLIC_API_URL_DISPLAY=https://test-inline-display.example.com
+      - NEXTAUTH_URL=https://test-inline-app.example.com
+      - NEXTAUTH_SECRET=inline-test-secret
+    restart: unless-stopped
+    profiles: ["test"]  # Only start when test profile is used
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:3000/api/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 40s
+    networks:
+      - milomcp-network
+
+networks:
+  milomcp-network:
+    driver: bridge
+
+# Usage examples:
+# Development: docker-compose up milomcp-studio-dev
+# Production:  docker-compose --profile production up milomcp-studio-prod
+# Test:        docker-compose --profile test up milomcp-studio-test
+# All dev:     docker-compose up (default)
+# All envs:    docker-compose --profile production --profile test up

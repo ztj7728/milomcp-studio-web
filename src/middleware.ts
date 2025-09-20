@@ -9,7 +9,7 @@ const intlMiddleware = createIntlMiddleware({
   locales,
   defaultLocale,
   localePrefix: 'always',
-  localeDetection: true, // Enable automatic locale detection
+  localeDetection: false, // Disable automatic detection - we'll handle it manually
 })
 
 function stripLocaleFromPathname(pathname: string): string {
@@ -36,6 +36,36 @@ export default withAuth(
 
     // Get the current locale from pathname
     const currentLocale = getLocaleFromPathname(pathname)
+
+    // Handle manual locale preference detection only for root path
+    if (pathname === '/') {
+      // Check for user's manual language preference in cookie
+      const userLangPreference = req.cookies.get(
+        'user-language-preference'
+      )?.value
+
+      if (userLangPreference && locales.includes(userLangPreference as any)) {
+        // User has manually selected a language, respect it
+        const redirectPath =
+          userLangPreference === defaultLocale ? '/' : `/${userLangPreference}`
+        if (redirectPath !== '/') {
+          console.log('Redirecting to user preferred language:', redirectPath)
+          return NextResponse.redirect(new URL(redirectPath, req.url))
+        }
+      } else {
+        // No manual preference, use browser language detection
+        const acceptLanguage = req.headers.get('accept-language') || ''
+        const browserLocale = acceptLanguage.includes('zh') ? 'zh-CN' : 'en'
+
+        if (browserLocale !== defaultLocale) {
+          console.log(
+            'Redirecting to browser detected language:',
+            `/${browserLocale}`
+          )
+          return NextResponse.redirect(new URL(`/${browserLocale}`, req.url))
+        }
+      }
+    }
 
     // Handle old routes without locale prefix BEFORE intl middleware (but let intl handle root)
     if (

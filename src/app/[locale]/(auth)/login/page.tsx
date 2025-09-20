@@ -17,7 +17,7 @@ function LoginPageContent() {
   const searchParams = useSearchParams()
   const params = useParams()
   const locale = params.locale as string
-  const t = useTranslations('login')
+  const t = useTranslations('auth.login')
   const callbackUrl = searchParams.get('callbackUrl') || `/${locale}/dashboard`
   const message = searchParams.get('message')
 

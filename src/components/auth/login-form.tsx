@@ -27,7 +27,7 @@ export function LoginForm({ callbackUrl = '/dashboard' }: LoginFormProps) {
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState('')
   const router = useRouter()
-  const t = useTranslations('login')
+  const t = useTranslations('auth.login')
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()

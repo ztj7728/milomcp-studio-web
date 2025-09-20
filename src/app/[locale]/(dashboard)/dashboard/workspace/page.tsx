@@ -1,6 +1,7 @@
 'use client'
 
 import { useState } from 'react'
+import { useTranslations } from 'next-intl'
 import {
   useFiles,
   useFileContent,
@@ -28,6 +29,7 @@ export default function FilesPage() {
   const [selectedFile, setSelectedFile] = useState<FileItem | null>(null)
   const [newFileName, setNewFileName] = useState('')
   const [isCreatingFile, setIsCreatingFile] = useState(false)
+  const t = useTranslations('workspace')
 
   const {
     data: files,
@@ -73,7 +75,7 @@ export default function FilesPage() {
   }
 
   const handleDeleteFile = async (file: FileItem) => {
-    if (!confirm(`Are you sure you want to delete "${file.name}"?`)) return
+    if (!confirm(t('confirmDelete', { filename: file.name }))) return
 
     try {
       await deleteFileMutation.mutateAsync(file.name)
@@ -97,19 +99,19 @@ export default function FilesPage() {
       file.name.endsWith('.js')
     )
     if (jsFiles.length === 0) {
-      alert('Please select JavaScript (.js) files only.')
+      alert(t('selectJsFiles'))
       return
     }
 
     if (jsFiles.length > 10) {
-      alert('Maximum 10 files allowed per upload.')
+      alert(t('maxFilesLimit'))
       return
     }
 
     for (const file of jsFiles) {
       if (file.size > 10 * 1024 * 1024) {
         // 10MB limit
-        alert(`File "${file.name}" is too large. Maximum file size is 10MB.`)
+        alert(t('fileTooLarge', { filename: file.name }))
         return
       }
     }
@@ -130,19 +132,15 @@ export default function FilesPage() {
         if (summary && typeof summary === 'object') {
           const { successful, failed, total } = summary
           if (successful === total) {
-            alert(`Successfully uploaded ${successful} file(s).`)
+            alert(t('uploadSuccess', { count: successful }))
           } else if (successful > 0) {
-            alert(
-              `Uploaded ${successful} out of ${total} files. ${failed} file(s) failed.`
-            )
+            alert(t('uploadPartialSuccess', { successful, total, failed }))
           } else {
-            alert(
-              'All file uploads failed. Please check the files and try again.'
-            )
+            alert(t('uploadAllFailed'))
           }
         }
       } else {
-        alert('Files uploaded successfully.')
+        alert(t('uploadSuccessGeneric'))
       }
 
       refetchFiles()
@@ -150,7 +148,7 @@ export default function FilesPage() {
       event.target.value = ''
     } catch (error) {
       console.error('Failed to upload files:', error)
-      alert('Failed to upload files. Please try again.')
+      alert(t('uploadFailed'))
       event.target.value = ''
     }
   }
@@ -199,12 +197,12 @@ export default function FilesPage() {
     return (
       <div className="p-8">
         <div className="bg-red-50 border border-red-200 rounded p-4">
-          <p className="text-red-800 font-medium">❌ Failed to load files</p>
+          <p className="text-red-800 font-medium">{t('failedToLoadFiles')}</p>
           <p className="text-red-600 text-sm mt-1">
-            Please check your connection and try again.
+            {t('checkConnectionRetry')}
           </p>
           <Button onClick={() => refetchFiles()} className="mt-2">
-            Retry
+            {t('retry')}
           </Button>
         </div>
       </div>
@@ -217,7 +215,7 @@ export default function FilesPage() {
       <div className="flex items-center justify-between p-4 border-b border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800">
         <div className="flex items-center space-x-4">
           <h1 className="text-xl font-semibold text-gray-900 dark:text-gray-100">
-            Workspace
+            {t('title')}
           </h1>
           {/* Breadcrumb Navigation */}
           <div className="flex items-center space-x-1 text-sm text-gray-600 dark:text-gray-400">
@@ -261,7 +259,7 @@ export default function FilesPage() {
             variant="outline"
             size="sm"
           >
-            📄 New File
+            {t('newFile')}
           </Button>
           <div className="relative">
             <Button
@@ -272,7 +270,7 @@ export default function FilesPage() {
                 document.getElementById('file-upload-input')?.click()
               }
             >
-              {uploadFilesMutation.isPending ? '⏳ Uploading...' : '📤 Upload'}
+              {uploadFilesMutation.isPending ? t('uploading') : t('upload')}
             </Button>
             <Input
               id="file-upload-input"
@@ -293,7 +291,7 @@ export default function FilesPage() {
         <div className="w-80 border-r border-gray-200 dark:border-gray-700 bg-gray-50 dark:bg-gray-800 flex flex-col">
           <div className="p-3 border-b border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800">
             <h2 className="font-medium text-sm text-gray-900 dark:text-gray-100">
-              Files
+              {t('files')}
             </h2>
           </div>
 
@@ -302,7 +300,7 @@ export default function FilesPage() {
               <div className="text-center py-8">
                 <div className="animate-spin rounded-full h-6 w-6 border-b-2 border-blue-500 mx-auto mb-2"></div>
                 <p className="text-sm text-gray-500 dark:text-gray-400">
-                  Loading...
+                  {t('loading')}
                 </p>
               </div>
             ) : (
@@ -325,7 +323,7 @@ export default function FilesPage() {
                         </p>
                         <p className="text-xs text-gray-500 dark:text-gray-400">
                           {file.type === 'directory'
-                            ? 'Folder'
+                            ? t('folder')
                             : formatFileSize(file.size)}
                         </p>
                       </div>
@@ -348,7 +346,7 @@ export default function FilesPage() {
                   (files as any).data.length === 0) && (
                   <div className="text-center py-8 text-gray-500 dark:text-gray-400">
                     <div className="text-2xl mb-2">📁</div>
-                    <p className="text-sm">No files found</p>
+                    <p className="text-sm">{t('noFilesFound')}</p>
                   </div>
                 )}
               </div>
@@ -364,7 +362,7 @@ export default function FilesPage() {
                 <div className="text-center">
                   <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-500 mx-auto mb-2"></div>
                   <p className="text-sm text-gray-500">
-                    Loading {selectedFile.name}...
+                    {t('loadingFile', { filename: selectedFile.name })}
                   </p>
                 </div>
               </div>
@@ -376,7 +374,7 @@ export default function FilesPage() {
                     <div className="absolute top-4 right-4 z-10 flex items-center gap-2 bg-white dark:bg-gray-800 px-3 py-1 rounded-full shadow-md border">
                       <div className="animate-spin rounded-full h-3 w-3 border-b-2 border-blue-500"></div>
                       <span className="text-xs text-gray-600 dark:text-gray-300">
-                        Saving...
+                        {t('saving')}
                       </span>
                     </div>
                   )}
@@ -395,13 +393,13 @@ export default function FilesPage() {
             ) : (
               <div className="flex items-center justify-center h-full">
                 <div className="text-center">
-                  <p className="text-gray-500 mb-2">Unable to load file</p>
+                  <p className="text-gray-500 mb-2">{t('unableToLoadFile')}</p>
                   <Button
                     onClick={() => refetchFiles()}
                     variant="outline"
                     size="sm"
                   >
-                    Retry
+                    {t('retry')}
                   </Button>
                 </div>
               </div>
@@ -411,13 +409,11 @@ export default function FilesPage() {
               <div className="text-center">
                 <div className="text-6xl mb-4">📝</div>
                 <h2 className="text-xl font-medium text-gray-100 mb-2">
-                  Welcome to Workspace
+                  {t('welcomeToWorkspace')}
                 </h2>
-                <p className="text-gray-300 mb-4">
-                  Select a file from the sidebar to start editing
-                </p>
+                <p className="text-gray-300 mb-4">{t('selectFileToStart')}</p>
                 <div className="text-sm text-gray-500">
-                  <p>💡 Tip: Use Ctrl+S to save your changes</p>
+                  <p>{t('ctrlSToSave')}</p>
                 </div>
               </div>
             </div>
@@ -430,16 +426,16 @@ export default function FilesPage() {
         <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center">
           <Card className="w-96">
             <CardHeader>
-              <CardTitle>Create New File</CardTitle>
+              <CardTitle>{t('createNewFile')}</CardTitle>
             </CardHeader>
             <CardContent className="space-y-4">
               <div>
-                <Label htmlFor="file-name">File Name</Label>
+                <Label htmlFor="file-name">{t('fileName')}</Label>
                 <Input
                   id="file-name"
                   value={newFileName}
                   onChange={(e) => setNewFileName(e.target.value)}
-                  placeholder="Enter file name (e.g., script.js)"
+                  placeholder={t('enterFileName')}
                   onKeyPress={(e) => {
                     if (e.key === 'Enter') handleCreateFile()
                   }}
@@ -453,13 +449,13 @@ export default function FilesPage() {
                     setNewFileName('')
                   }}
                 >
-                  Cancel
+                  {t('cancel')}
                 </Button>
                 <Button
                   onClick={handleCreateFile}
                   disabled={!newFileName.trim() || saveFileMutation.isPending}
                 >
-                  {saveFileMutation.isPending ? 'Creating...' : 'Create'}
+                  {saveFileMutation.isPending ? t('creating') : t('create')}
                 </Button>
               </div>
             </CardContent>

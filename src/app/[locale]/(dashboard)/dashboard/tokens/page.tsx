@@ -1,6 +1,7 @@
 'use client'
 
 import { useState } from 'react'
+import { useTranslations } from 'next-intl'
 import { Button } from '@/components/ui/button'
 import {
   Card,
@@ -56,6 +57,7 @@ export default function TokensPage() {
   const [selectedPermissions, setSelectedPermissions] = useState<string[]>([])
   const [allPermissions, setAllPermissions] = useState(false)
   const [createdToken, setCreatedToken] = useState<string | null>(null)
+  const t = useTranslations('tokens')
 
   const {
     data: tokens,
@@ -95,11 +97,7 @@ export default function TokensPage() {
       return
     }
 
-    if (
-      !confirm(
-        'Are you sure you want to delete this token? This action cannot be undone.'
-      )
-    ) {
+    if (!confirm(t('confirmDelete'))) {
       return
     }
 
@@ -108,7 +106,9 @@ export default function TokensPage() {
     } catch (error) {
       console.error('Failed to delete token:', error)
       alert(
-        `Failed to delete token: ${error instanceof Error ? error.message : 'Unknown error'}`
+        t('deleteTokenFailed', {
+          error: error instanceof Error ? error.message : 'Unknown error',
+        })
       )
     }
   }
@@ -134,7 +134,7 @@ export default function TokensPage() {
       <div className="flex items-center justify-center h-96">
         <div className="text-center">
           <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-500 mx-auto mb-2"></div>
-          <p className="text-sm text-gray-500">Loading tokens...</p>
+          <p className="text-sm text-gray-500">{t('loadingTokens')}</p>
         </div>
       </div>
     )
@@ -145,7 +145,7 @@ export default function TokensPage() {
       <Card>
         <CardContent className="pt-6">
           <div className="text-center">
-            <p className="text-red-500">Failed to load tokens</p>
+            <p className="text-red-500">{t('failedToLoad')}</p>
           </div>
         </CardContent>
       </Card>
@@ -158,32 +158,28 @@ export default function TokensPage() {
       <div className="flex items-center justify-between">
         <div>
           <h1 className="text-2xl font-bold text-gray-900 dark:text-gray-100">
-            API Tokens
+            {t('title')}
           </h1>
-          <p className="text-gray-600 dark:text-gray-400">
-            Manage your API tokens for tool execution
-          </p>
+          <p className="text-gray-600 dark:text-gray-400">{t('subtitle')}</p>
         </div>
 
         <Dialog open={isCreateOpen} onOpenChange={setIsCreateOpen}>
           <DialogTrigger asChild>
             <Button>
               <Plus className="h-4 w-4 mr-2" />
-              Create Token
+              {t('createToken')}
             </Button>
           </DialogTrigger>
 
           <DialogContent className="sm:max-w-md">
             <DialogHeader>
               <DialogTitle>
-                {createdToken
-                  ? 'Token Created Successfully'
-                  : 'Create New API Token'}
+                {createdToken ? t('tokenCreatedSuccess') : t('createNewToken')}
               </DialogTitle>
               <DialogDescription>
                 {createdToken
-                  ? "Save this token securely. You won't be able to see it again."
-                  : 'Create a new API token for tool execution.'}
+                  ? t('saveTokenSecurely')
+                  : t('createTokenDescription')}
               </DialogDescription>
             </DialogHeader>
 
@@ -191,7 +187,7 @@ export default function TokensPage() {
               <div className="space-y-4">
                 <div className="p-3 bg-green-50 dark:bg-green-900/20 border border-green-200 dark:border-green-800 rounded-lg">
                   <p className="text-sm text-green-800 dark:text-green-200 mb-2">
-                    Your new API token:
+                    {t('yourNewToken')}
                   </p>
                   <div className="flex items-center space-x-2">
                     <code className="flex-1 p-2 bg-white dark:bg-gray-800 border rounded text-sm font-mono break-all">
@@ -208,24 +204,24 @@ export default function TokensPage() {
                 </div>
 
                 <div className="flex justify-end">
-                  <Button onClick={closeCreateDialog}>Done</Button>
+                  <Button onClick={closeCreateDialog}>{t('done')}</Button>
                 </div>
               </div>
             ) : (
               <div className="space-y-4">
                 <div>
-                  <Label htmlFor="token-name">Token Name</Label>
+                  <Label htmlFor="token-name">{t('tokenName')}</Label>
                   <Input
                     id="token-name"
                     value={newTokenName}
                     onChange={(e) => setNewTokenName(e.target.value)}
-                    placeholder="Enter token name..."
+                    placeholder={t('enterTokenName')}
                     className="mt-1"
                   />
                 </div>
 
                 <div>
-                  <Label>Permissions</Label>
+                  <Label>{t('permissions')}</Label>
                   <div className="mt-2 space-y-3">
                     <div className="flex items-center space-x-2">
                       <Checkbox
@@ -242,7 +238,7 @@ export default function TokensPage() {
                         htmlFor="all-permissions"
                         className="text-sm font-medium"
                       >
-                        All tools (*)
+                        {t('allTools')}
                       </Label>
                     </div>
 
@@ -250,7 +246,7 @@ export default function TokensPage() {
                       <div className="max-h-32 overflow-y-auto space-y-2 pl-6">
                         {toolsLoading ? (
                           <div className="text-sm text-gray-500">
-                            Loading tools...
+                            {t('loadingTools')}
                           </div>
                         ) : Array.isArray((tools as any)?.data) &&
                           (tools as any).data.length > 0 ? (
@@ -289,7 +285,7 @@ export default function TokensPage() {
                           ))
                         ) : (
                           <div className="text-sm text-gray-500">
-                            No tools available
+                            {t('noToolsAvailable')}
                           </div>
                         )}
                       </div>
@@ -299,7 +295,7 @@ export default function TokensPage() {
 
                 <div className="flex justify-end space-x-2">
                   <Button variant="outline" onClick={closeCreateDialog}>
-                    Cancel
+                    {t('cancel')}
                   </Button>
                   <Button
                     onClick={handleCreateToken}
@@ -310,8 +306,8 @@ export default function TokensPage() {
                     }
                   >
                     {createTokenMutation.isPending
-                      ? 'Creating...'
-                      : 'Create Token'}
+                      ? t('creating')
+                      : t('createTokenButton')}
                   </Button>
                 </div>
               </div>
@@ -325,33 +321,33 @@ export default function TokensPage() {
         <CardHeader>
           <CardTitle className="flex items-center gap-2">
             <Key className="h-5 w-5" />
-            Your API Tokens
+            {t('yourApiTokens')}
           </CardTitle>
           <CardDescription>
             {tokens?.length === 0
-              ? "You haven't created any API tokens yet."
-              : `You have ${tokens?.length} API token(s).`}
+              ? t('noTokensCreated')
+              : t('tokenCount', { count: tokens?.length || 0 })}
           </CardDescription>
         </CardHeader>
         <CardContent>
           {tokens?.length === 0 ? (
             <div className="text-center py-8">
               <Key className="h-12 w-12 text-gray-400 mx-auto mb-4" />
-              <p className="text-gray-500 mb-4">No API tokens found</p>
+              <p className="text-gray-500 mb-4">{t('noApiTokensFound')}</p>
               <Button onClick={() => setIsCreateOpen(true)}>
                 <Plus className="h-4 w-4 mr-2" />
-                Create Your First Token
+                {t('createFirstToken')}
               </Button>
             </div>
           ) : (
             <Table>
               <TableHeader>
                 <TableRow>
-                  <TableHead>Name</TableHead>
-                  <TableHead>Permissions</TableHead>
-                  <TableHead>Created</TableHead>
-                  <TableHead>Last Used</TableHead>
-                  <TableHead className="w-[100px]">Actions</TableHead>
+                  <TableHead>{t('name')}</TableHead>
+                  <TableHead>{t('permissions')}</TableHead>
+                  <TableHead>{t('created')}</TableHead>
+                  <TableHead>{t('lastUsed')}</TableHead>
+                  <TableHead className="w-[100px]">{t('actions')}</TableHead>
                 </TableRow>
               </TableHeader>
               <TableBody>
@@ -382,7 +378,9 @@ export default function TokensPage() {
                         </TableCell>
                         <TableCell>
                           {parsedPermissions.includes('*') ? (
-                            <Badge variant="secondary">All Tools</Badge>
+                            <Badge variant="secondary">
+                              {t('allToolsPermission')}
+                            </Badge>
                           ) : (
                             <div className="flex flex-wrap gap-1">
                               {parsedPermissions
@@ -398,7 +396,9 @@ export default function TokensPage() {
                                 ))}
                               {parsedPermissions.length > 3 && (
                                 <Badge variant="outline" className="text-xs">
-                                  +{parsedPermissions.length - 3} more
+                                  {t('morePermissions', {
+                                    count: parsedPermissions.length - 3,
+                                  })}
                                 </Badge>
                               )}
                             </div>
@@ -417,7 +417,9 @@ export default function TokensPage() {
                               {formatDate(token.lastUsedAt)}
                             </div>
                           ) : (
-                            <span className="text-sm text-gray-500">Never</span>
+                            <span className="text-sm text-gray-500">
+                              {t('never')}
+                            </span>
                           )}
                         </TableCell>
                         <TableCell>
@@ -428,7 +430,9 @@ export default function TokensPage() {
                               </Button>
                             </DropdownMenuTrigger>
                             <DropdownMenuContent align="end">
-                              <DropdownMenuLabel>Actions</DropdownMenuLabel>
+                              <DropdownMenuLabel>
+                                {t('actions')}
+                              </DropdownMenuLabel>
                               <DropdownMenuSeparator />
                               <DropdownMenuItem
                                 className="text-red-600"
@@ -437,7 +441,7 @@ export default function TokensPage() {
                                 }
                               >
                                 <Trash2 className="h-4 w-4 mr-2" />
-                                Delete Token
+                                {t('deleteToken')}
                               </DropdownMenuItem>
                             </DropdownMenuContent>
                           </DropdownMenu>
@@ -450,8 +454,8 @@ export default function TokensPage() {
                     <TableCell colSpan={5} className="text-center py-8">
                       <div className="text-gray-500">
                         {tokensLoading
-                          ? 'Loading tokens...'
-                          : 'No tokens found or failed to load'}
+                          ? t('loadingTokens')
+                          : t('noTokensFound')}
                       </div>
                     </TableCell>
                   </TableRow>

@@ -2,8 +2,8 @@ import { headers } from 'next/headers'
 import { redirect } from 'next/navigation'
 import { locales, defaultLocale } from '@/i18n/config'
 
-function detectBrowserLanguage(): string {
-  const headersList = headers()
+async function detectBrowserLanguage(): Promise<string> {
+  const headersList = await headers()
   const acceptLanguage = headersList.get('accept-language')
 
   if (!acceptLanguage) {
@@ -42,7 +42,7 @@ function detectBrowserLanguage(): string {
   return defaultLocale
 }
 
-export default function RootPage() {
-  const detectedLocale = detectBrowserLanguage()
+export default async function RootPage() {
+  const detectedLocale = await detectBrowserLanguage()
   redirect(`/${detectedLocale}`)
 }

@@ -17,7 +17,7 @@ function SignupPageContent() {
   const searchParams = useSearchParams()
   const params = useParams()
   const locale = params.locale as string
-  const t = useTranslations('signup')
+  const t = useTranslations('auth.signup')
   const callbackUrl = searchParams.get('callbackUrl') || `/${locale}/dashboard`
 
   useEffect(() => {

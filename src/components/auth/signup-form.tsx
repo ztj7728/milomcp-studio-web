@@ -40,7 +40,7 @@ export function SignupForm() {
   const router = useRouter()
   const params = useParams()
   const locale = params.locale as string
-  const t = useTranslations('signup')
+  const t = useTranslations('auth.signup')
 
   const validateForm = () => {
     if (!formData.username.trim()) {
@@ -158,7 +158,10 @@ export function SignupForm() {
                 login page shortly.
               </p>
             </div>
-            <Button onClick={() => router.push(`/${locale}/login`)} className="w-full">
+            <Button
+              onClick={() => router.push(`/${locale}/login`)}
+              className="w-full"
+            >
               Continue to Login
             </Button>
           </div>

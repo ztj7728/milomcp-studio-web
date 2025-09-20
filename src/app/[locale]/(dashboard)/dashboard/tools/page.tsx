@@ -1,6 +1,7 @@
 'use client'
 
 import { useState } from 'react'
+import { useTranslations } from 'next-intl'
 import {
   Card,
   CardContent,
@@ -22,13 +23,14 @@ export default function ToolsPage() {
   const [searchQuery, setSearchQuery] = useState('')
   const [viewMode, setViewMode] = useState<'grid' | 'detail'>('grid')
   const { data: tools, isLoading, error } = useTools()
+  const t = useTranslations('tools')
 
   if (isLoading) {
     return (
       <div className="space-y-6">
         <div>
-          <h2 className="text-3xl font-bold tracking-tight">Tools</h2>
-          <p className="text-muted-foreground">Available MiloMCP tools</p>
+          <h2 className="text-3xl font-bold tracking-tight">{t('title')}</h2>
+          <p className="text-muted-foreground">{t('subtitle')}</p>
         </div>
         <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
           {[...Array(6)].map((_, i) => (
@@ -51,21 +53,21 @@ export default function ToolsPage() {
     return (
       <div className="space-y-6">
         <div>
-          <h2 className="text-3xl font-bold tracking-tight">Tools</h2>
-          <p className="text-muted-foreground">Available MiloMCP tools</p>
+          <h2 className="text-3xl font-bold tracking-tight">{t('title')}</h2>
+          <p className="text-muted-foreground">{t('subtitle')}</p>
         </div>
         <Card>
           <CardContent className="flex items-center justify-center py-16">
             <div className="text-center">
               <Wrench className="mx-auto h-12 w-12 text-muted-foreground" />
               <h3 className="mt-4 text-lg font-semibold">
-                Failed to load tools
+                {t('failedToLoad')}
               </h3>
               <p className="text-muted-foreground">
-                Please check your connection and try again.
+                {t('checkConnectionRetry')}
               </p>
               <Button className="mt-4" onClick={() => window.location.reload()}>
-                Retry
+                {t('retry')}
               </Button>
             </div>
           </CardContent>
@@ -104,7 +106,7 @@ export default function ToolsPage() {
         <div className="flex items-center gap-4">
           <Button variant="ghost" onClick={handleBackToGrid}>
             <ArrowLeft className="mr-2 h-4 w-4" />
-            Back to Tools
+            {t('backToTools')}
           </Button>
         </div>
         <ToolDetailView
@@ -126,10 +128,12 @@ export default function ToolsPage() {
     <div className="space-y-6">
       <div className="flex items-center justify-between">
         <div>
-          <h2 className="text-3xl font-bold tracking-tight">Tools</h2>
+          <h2 className="text-3xl font-bold tracking-tight">{t('title')}</h2>
           <p className="text-muted-foreground">
-            Available MiloMCP tools ({filteredTools.length} of{' '}
-            {toolsData.length})
+            {t('availableTools', {
+              filtered: filteredTools.length,
+              total: toolsData.length,
+            })}
           </p>
         </div>
       </div>
@@ -138,7 +142,7 @@ export default function ToolsPage() {
         <div className="relative flex-1 max-w-sm">
           <Search className="absolute left-2 top-2.5 h-4 w-4 text-muted-foreground" />
           <Input
-            placeholder="Search tools..."
+            placeholder={t('searchPlaceholder')}
             value={searchQuery}
             onChange={(e) => setSearchQuery(e.target.value)}
             className="pl-8"
@@ -152,12 +156,10 @@ export default function ToolsPage() {
             <div className="text-center">
               <Wrench className="mx-auto h-12 w-12 text-muted-foreground" />
               <h3 className="mt-4 text-lg font-semibold">
-                {searchQuery ? 'No matching tools found' : 'No tools available'}
+                {searchQuery ? t('noMatchingTools') : t('noToolsAvailable')}
               </h3>
               <p className="text-muted-foreground">
-                {searchQuery
-                  ? 'Try adjusting your search query.'
-                  : 'No tools are currently configured in your workspace.'}
+                {searchQuery ? t('tryAdjustingSearch') : t('noToolsConfigured')}
               </p>
             </div>
           </CardContent>
@@ -173,22 +175,24 @@ export default function ToolsPage() {
                 <div className="flex items-center justify-between">
                   <CardTitle className="flex items-center gap-2">
                     <Wrench className="h-5 w-5" />
-                    {tool.name || `Tool ${index + 1}`}
+                    {tool.name || t('toolNumber', { number: index + 1 })}
                   </CardTitle>
-                  <Badge variant="secondary">{tool.type || 'tool'}</Badge>
+                  <Badge variant="secondary">{tool.type || t('tool')}</Badge>
                 </div>
                 <CardDescription>
-                  {tool.description || 'No description available'}
+                  {tool.description || t('noDescriptionAvailable')}
                 </CardDescription>
               </CardHeader>
               <CardContent>
                 <div className="space-y-3">
                   {tool.schema && (
                     <div className="text-sm">
-                      <span className="font-medium">Parameters:</span>
+                      <span className="font-medium">{t('parameters')}</span>
                       <div className="mt-1 text-muted-foreground">
-                        {Object.keys(tool.schema.properties || {}).length}{' '}
-                        parameters
+                        {t('parametersCount', {
+                          count: Object.keys(tool.schema.properties || {})
+                            .length,
+                        })}
                       </div>
                     </div>
                   )}
@@ -199,7 +203,7 @@ export default function ToolsPage() {
                       onClick={() => handleExecuteTool(tool)}
                     >
                       <Play className="mr-2 h-4 w-4" />
-                      Execute
+                      {t('execute')}
                     </Button>
                     <Button
                       size="sm"
