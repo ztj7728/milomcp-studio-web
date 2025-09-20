@@ -1,7 +1,7 @@
 'use client'
 
 import { useSession, signOut } from 'next-auth/react'
-import { useRouter } from 'next/navigation'
+import { useRouter, useParams } from 'next/navigation'
 import { useEffect, ReactNode, useRef } from 'react'
 
 interface AuthGuardProps {
@@ -16,6 +16,8 @@ interface AuthGuardProps {
 export function AuthGuard({ children, requireAuth = true }: AuthGuardProps) {
   const { data: session, status } = useSession()
   const router = useRouter()
+  const params = useParams()
+  const locale = params.locale as string
   const isSigningOut = useRef(false)
 
   useEffect(() => {
@@ -27,7 +29,7 @@ export function AuthGuard({ children, requireAuth = true }: AuthGuardProps) {
     // If session is null/undefined after loading, user needs to login
     if (status === 'unauthenticated' || !session) {
       console.log('No valid session, redirecting to login...')
-      router.push('/login')
+      router.push(`/${locale}/login`)
       return
     }
 
@@ -37,7 +39,7 @@ export function AuthGuard({ children, requireAuth = true }: AuthGuardProps) {
         console.log('Refresh token expired, signing out user...')
         isSigningOut.current = true
         signOut({
-          callbackUrl: '/login',
+          callbackUrl: `/${locale}/login`,
           redirect: true,
         })
           .then(() => {
@@ -47,7 +49,7 @@ export function AuthGuard({ children, requireAuth = true }: AuthGuardProps) {
             console.error('Error during signout:', error)
             isSigningOut.current = false
             // Fallback: redirect manually
-            router.push('/login')
+            router.push(`/${locale}/login`)
           })
       }
       return
@@ -56,7 +58,7 @@ export function AuthGuard({ children, requireAuth = true }: AuthGuardProps) {
     // Check if we have valid tokens
     if (!session.accessToken) {
       console.log('No access token available, redirecting to login...')
-      router.push('/login')
+      router.push(`/${locale}/login`)
       return
     }
   }, [session, status, router, requireAuth])

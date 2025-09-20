@@ -3,8 +3,10 @@
 import { useSession } from 'next-auth/react'
 import { useRouter, useSearchParams } from 'next/navigation'
 import { useEffect, Suspense } from 'react'
+import { useTranslations } from 'next-intl'
 import { LoginForm } from '@/components/auth/login-form'
 import Link from 'next/link'
+import { useParams } from 'next/navigation'
 
 // Disable static generation for this page
 export const dynamic = 'force-dynamic'
@@ -13,7 +15,10 @@ function LoginPageContent() {
   const { data: session, status } = useSession()
   const router = useRouter()
   const searchParams = useSearchParams()
-  const callbackUrl = searchParams.get('callbackUrl') || '/dashboard'
+  const params = useParams()
+  const locale = params.locale as string
+  const t = useTranslations('login')
+  const callbackUrl = searchParams.get('callbackUrl') || `/${locale}/dashboard`
   const message = searchParams.get('message')
 
   useEffect(() => {
@@ -36,12 +41,6 @@ function LoginPageContent() {
 
   return (
     <div className="space-y-6">
-      <div className="text-center">
-        <h1 className="text-3xl font-bold">MiloMCP Studio</h1>
-        <p className="text-muted-foreground mt-2">
-          Modern web interface for the MiloMCP platform
-        </p>
-      </div>
       {message && (
         <div className="text-sm text-green-600 bg-green-50 border border-green-200 p-3 rounded-md text-center">
           {message}
@@ -49,12 +48,12 @@ function LoginPageContent() {
       )}
       <LoginForm callbackUrl={callbackUrl} />
       <div className="text-center text-sm text-muted-foreground">
-        Don&apos;t have an account?{' '}
+        {t('noAccount')}{' '}
         <Link
-          href="/signup"
+          href={`/${locale}/signup`}
           className="font-medium text-primary hover:underline"
         >
-          Sign up
+          {t('signUp')}
         </Link>
       </div>
     </div>

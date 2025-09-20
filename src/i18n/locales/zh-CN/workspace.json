@@ -1,0 +1,26 @@
+{
+  "fileSelect": "选择文件以开始",
+  "chooseFile": "从浏览器中选择文件来查看或编辑",
+  "fileBrowser": {
+    "title": "文件",
+    "search": "搜索文件...",
+    "createFile": "创建文件",
+    "createFolder": "创建文件夹",
+    "upload": "上传",
+    "refresh": "刷新",
+    "noFiles": "未找到文件",
+    "loading": "正在加载文件..."
+  },
+  "editor": {
+    "save": "保存文件",
+    "saveAs": "另存为",
+    "close": "关闭",
+    "undo": "撤销",
+    "redo": "重做",
+    "find": "查找",
+    "replace": "替换",
+    "language": "语言",
+    "theme": "主题",
+    "wordWrap": "自动换行"
+  }
+}

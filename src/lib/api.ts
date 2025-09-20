@@ -1,6 +1,8 @@
 // API Client that routes all requests through Next.js proxy
 // This avoids CORS issues and keeps backend URLs secure
 
+import { getLocaleFromPathname } from '@/lib/i18n-utils'
+
 class ApiClient {
   // All requests go through the Next.js proxy - no direct backend calls
   private readonly proxyBaseUrl = '/api/proxy'
@@ -57,14 +59,16 @@ class ApiClient {
       if (response.status === 401) {
         // Redirect to login for authentication issues
         console.log('API returned 401, redirecting to login...')
-        window.location.href = '/login'
+        const currentLocale = getLocaleFromPathname(window.location.pathname)
+        window.location.href = `/${currentLocale}/login`
         throw new Error('Authentication required')
       }
 
       if (response.status === 403) {
         // Forbidden - likely refresh token expired
         console.log('API returned 403, redirecting to login...')
-        window.location.href = '/login'
+        const currentLocale = getLocaleFromPathname(window.location.pathname)
+        window.location.href = `/${currentLocale}/login`
         throw new Error('Session expired')
       }
 

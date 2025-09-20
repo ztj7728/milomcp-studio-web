@@ -1,0 +1,26 @@
+{
+  "fileSelect": "Select a file to get started",
+  "chooseFile": "Choose a file from the browser to view or edit it",
+  "fileBrowser": {
+    "title": "Files",
+    "search": "Search files...",
+    "createFile": "Create File",
+    "createFolder": "Create Folder",
+    "upload": "Upload",
+    "refresh": "Refresh",
+    "noFiles": "No files found",
+    "loading": "Loading files..."
+  },
+  "editor": {
+    "save": "Save File",
+    "saveAs": "Save As",
+    "close": "Close",
+    "undo": "Undo",
+    "redo": "Redo",
+    "find": "Find",
+    "replace": "Replace",
+    "language": "Language",
+    "theme": "Theme",
+    "wordWrap": "Word Wrap"
+  }
+}

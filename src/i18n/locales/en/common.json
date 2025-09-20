@@ -1,0 +1,82 @@
+{
+  "site": {
+    "title": "MiloMCP Studio",
+    "description": "Modern web interface for the MiloMCP multi-user platform"
+  },
+  "navigation": {
+    "dashboard": "Dashboard",
+    "workspace": "Workspace",
+    "profile": "Profile",
+    "settings": "Settings",
+    "logout": "Sign Out"
+  },
+  "dashboard": {
+    "title": "Dashboard",
+    "tools": "Tools",
+    "workspace": "Workspace",
+    "tokens": "Tokens",
+    "environment": "Environment",
+    "activity": "Activity",
+    "users": "Users",
+    "administration": "Administration"
+  },
+  "buttons": {
+    "save": "Save",
+    "cancel": "Cancel",
+    "edit": "Edit",
+    "delete": "Delete",
+    "create": "Create",
+    "upload": "Upload",
+    "download": "Download",
+    "back": "Back",
+    "next": "Next",
+    "previous": "Previous",
+    "submit": "Submit",
+    "close": "Close"
+  },
+  "common": {
+    "loading": "Loading...",
+    "error": "An error occurred",
+    "success": "Success",
+    "warning": "Warning",
+    "info": "Information",
+    "confirm": "Confirm",
+    "search": "Search",
+    "filter": "Filter",
+    "sort": "Sort",
+    "actions": "Actions",
+    "options": "Options",
+    "required": "Required",
+    "optional": "Optional"
+  },
+  "homepage": {
+    "title": "Welcome to MiloMCP Studio",
+    "subtitle": "Modern web interface for the MiloMCP multi-user platform",
+    "features": {
+      "dashboard": {
+        "title": "Dashboard",
+        "description": "Access your personalized dashboard with tools and workspace management.",
+        "action": "Go to Dashboard"
+      },
+      "tools": {
+        "title": "Tools",
+        "description": "Execute and manage tools with real-time JSON-RPC communication.",
+        "action": "View Tools"
+      },
+      "workspace": {
+        "title": "Workspace",
+        "description": "Manage files and collaborate in your development workspace.",
+        "action": "Open Workspace"
+      },
+      "settings": {
+        "title": "Settings",
+        "description": "Configure tokens, environment variables, and user preferences.",
+        "action": "Settings"
+      }
+    },
+    "actions": {
+      "signIn": "Sign In",
+      "learnMore": "Learn More"
+    }
+  }
+}

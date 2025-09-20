@@ -1,0 +1,82 @@
+{
+  "site": {
+    "title": "MiloMCP Studio",
+    "description": "MiloMCP多用户平台的现代Web界面"
+  },
+  "navigation": {
+    "dashboard": "仪表板",
+    "workspace": "工作区",
+    "profile": "个人资料",
+    "settings": "设置",
+    "logout": "退出登录"
+  },
+  "dashboard": {
+    "title": "仪表板",
+    "tools": "工具",
+    "workspace": "工作区",
+    "tokens": "令牌",
+    "environment": "环境变量",
+    "activity": "活动记录",
+    "users": "用户管理",
+    "administration": "系统管理"
+  },
+  "buttons": {
+    "save": "保存",
+    "cancel": "取消",
+    "edit": "编辑",
+    "delete": "删除",
+    "create": "创建",
+    "upload": "上传",
+    "download": "下载",
+    "back": "返回",
+    "next": "下一步",
+    "previous": "上一步",
+    "submit": "提交",
+    "close": "关闭"
+  },
+  "common": {
+    "loading": "正在加载...",
+    "error": "发生错误",
+    "success": "成功",
+    "warning": "警告",
+    "info": "信息",
+    "confirm": "确认",
+    "search": "搜索",
+    "filter": "筛选",
+    "sort": "排序",
+    "actions": "操作",
+    "options": "选项",
+    "required": "必填",
+    "optional": "可选"
+  },
+  "homepage": {
+    "title": "欢迎使用MiloMCP Studio",
+    "subtitle": "MiloMCP多用户平台的现代Web界面",
+    "features": {
+      "dashboard": {
+        "title": "仪表板",
+        "description": "访问您的个性化仪表板，包含工具和工作区管理功能。",
+        "action": "前往仪表板"
+      },
+      "tools": {
+        "title": "工具",
+        "description": "通过实时JSON-RPC通信执行和管理工具。",
+        "action": "查看工具"
+      },
+      "workspace": {
+        "title": "工作区",
+        "description": "在您的开发工作区中管理文件并进行协作。",
+        "action": "打开工作区"
+      },
+      "settings": {
+        "title": "设置",
+        "description": "配置令牌、环境变量和用户首选项。",
+        "action": "设置"
+      }
+    },
+    "actions": {
+      "signIn": "登录",
+      "learnMore": "了解更多"
+    }
+  }
+}

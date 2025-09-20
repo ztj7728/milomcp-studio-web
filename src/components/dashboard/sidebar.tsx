@@ -1,7 +1,8 @@
 'use client'
 
 import Link from 'next/link'
-import { usePathname } from 'next/navigation'
+import { usePathname, useParams } from 'next/navigation'
+import { useTranslations } from 'next-intl'
 import { cn } from '@/lib/utils'
 import { Button } from '@/components/ui/button'
 import { ScrollArea } from '@/components/ui/scroll-area'
@@ -25,56 +26,59 @@ interface SidebarProps {
   className?: string
 }
 
-const navigationItems = [
-  {
-    title: 'Dashboard',
-    href: '/dashboard',
-    icon: Home,
-  },
-  {
-    title: 'Tools',
-    href: '/dashboard/tools',
-    icon: Wrench,
-  },
-  {
-    title: 'Files',
-    href: '/dashboard/files',
-    icon: FileText,
-  },
-  {
-    title: 'Tokens',
-    href: '/dashboard/tokens',
-    icon: Key,
-  },
-  {
-    title: 'Environment',
-    href: '/dashboard/environment',
-    icon: Settings,
-  },
-  {
-    title: 'Activity',
-    href: '/dashboard/activity',
-    icon: Activity,
-  },
-]
-
-const adminItems = [
-  {
-    title: 'Users',
-    href: '/dashboard/users',
-    icon: Users,
-  },
-  {
-    title: 'Settings',
-    href: '/dashboard/settings',
-    icon: Settings,
-  },
-]
-
 export function Sidebar({ className }: SidebarProps) {
   const pathname = usePathname()
+  const params = useParams()
+  const locale = params.locale as string
   const [collapsed, setCollapsed] = useState(false)
   const { isAdmin } = useAuth()
+  const t = useTranslations()
+
+  const navigationItems = [
+    {
+      title: t('dashboard.title'),
+      href: `/${locale}/dashboard`,
+      icon: Home,
+    },
+    {
+      title: t('dashboard.tools'),
+      href: `/${locale}/dashboard/tools`,
+      icon: Wrench,
+    },
+    {
+      title: t('dashboard.workspace'),
+      href: `/${locale}/dashboard/workspace`,
+      icon: FileText,
+    },
+    {
+      title: t('dashboard.tokens'),
+      href: `/${locale}/dashboard/tokens`,
+      icon: Key,
+    },
+    {
+      title: t('dashboard.environment'),
+      href: `/${locale}/dashboard/environment`,
+      icon: Settings,
+    },
+    {
+      title: t('dashboard.activity'),
+      href: `/${locale}/dashboard/activity`,
+      icon: Activity,
+    },
+  ]
+
+  const adminItems = [
+    {
+      title: t('dashboard.users'),
+      href: `/${locale}/dashboard/users`,
+      icon: Users,
+    },
+    {
+      title: t('navigation.settings'),
+      href: `/${locale}/dashboard/settings`,
+      icon: Settings,
+    },
+  ]
 
   return (
     <div className={cn('pb-12', className)}>
@@ -87,7 +91,7 @@ export function Sidebar({ className }: SidebarProps) {
                 collapsed && 'hidden'
               )}
             >
-              MiloMCP Studio
+              {t('site.title')}
             </h2>
             <Button
               variant="ghost"
@@ -131,7 +135,7 @@ export function Sidebar({ className }: SidebarProps) {
                   collapsed && 'hidden'
                 )}
               >
-                Administration
+                {t('dashboard.administration')}
               </h2>
               <div className="space-y-1">
                 {adminItems.map((item) => (

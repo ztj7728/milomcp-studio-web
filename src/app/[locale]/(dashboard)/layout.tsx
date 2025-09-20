@@ -1,7 +1,10 @@
+'use client'
+
 import { UserNav } from '@/components/auth/user-nav'
 import { Sidebar } from '@/components/dashboard/sidebar'
 import { ThemeToggle } from '@/components/theme-toggle'
 import { AuthGuard } from '@/components/auth/auth-guard'
+import { useTranslations } from 'next-intl'
 
 // Disable static generation for dashboard layout
 export const dynamic = 'force-dynamic'
@@ -28,15 +31,7 @@ export default function DashboardLayout({
             </div>
           </aside>
           <div className="flex flex-col lg:col-span-4">
-            <header className="flex h-14 items-center gap-4 border-b bg-muted/40 px-4 lg:h-[60px] lg:px-6">
-              <div className="w-full flex-1">
-                <h1 className="text-lg font-semibold md:text-xl">Dashboard</h1>
-              </div>
-              <div className="flex items-center gap-2">
-                <ThemeToggle />
-                <UserNav />
-              </div>
-            </header>
+            <DashboardHeader />
             <main className="flex flex-1 flex-col gap-4 p-4 lg:gap-6 lg:p-6">
               {children}
             </main>
@@ -44,5 +39,21 @@ export default function DashboardLayout({
         </div>
       </div>
     </AuthGuard>
+  )
+}
+
+function DashboardHeader() {
+  const t = useTranslations()
+  
+  return (
+    <header className="flex h-14 items-center gap-4 border-b bg-muted/40 px-4 lg:h-[60px] lg:px-6">
+      <div className="w-full flex-1">
+        <h1 className="text-lg font-semibold md:text-xl">{t('dashboard.title')}</h1>
+      </div>
+      <div className="flex items-center gap-2">
+        <ThemeToggle />
+        <UserNav />
+      </div>
+    </header>
   )
 }

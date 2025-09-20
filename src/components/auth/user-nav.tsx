@@ -1,6 +1,7 @@
 'use client'
 
 import { signOut, useSession } from 'next-auth/react'
+import { useParams } from 'next/navigation'
 import { Button } from '@/components/ui/button'
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar'
 import { Badge } from '@/components/ui/badge'
@@ -17,6 +18,8 @@ import { User, Settings, LogOut, Crown } from 'lucide-react'
 
 export function UserNav() {
   const { data: session, status } = useSession()
+  const params = useParams()
+  const locale = params.locale as string
 
   if (status === 'loading') {
     return <div className="w-8 h-8 rounded-full bg-muted animate-pulse" />
@@ -85,7 +88,7 @@ export function UserNav() {
           </DropdownMenuItem>
         </DropdownMenuGroup>
         <DropdownMenuSeparator />
-        <DropdownMenuItem onClick={() => signOut({ callbackUrl: '/login' })}>
+        <DropdownMenuItem onClick={() => signOut({ callbackUrl: `/${locale}/login` })}>
           <LogOut className="mr-2 h-4 w-4" />
           <span>Log out</span>
         </DropdownMenuItem>

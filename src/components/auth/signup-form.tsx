@@ -2,6 +2,8 @@
 
 import { useState } from 'react'
 import { useRouter } from 'next/navigation'
+import { useTranslations } from 'next-intl'
+import { useParams } from 'next/navigation'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
@@ -36,10 +38,13 @@ export function SignupForm() {
   const [showPassword, setShowPassword] = useState(false)
   const [showConfirmPassword, setShowConfirmPassword] = useState(false)
   const router = useRouter()
+  const params = useParams()
+  const locale = params.locale as string
+  const t = useTranslations('signup')
 
   const validateForm = () => {
     if (!formData.username.trim()) {
-      setError('Username is required')
+      setError(t('errors.required'))
       return false
     }
     if (formData.username.length < 3) {
@@ -47,19 +52,19 @@ export function SignupForm() {
       return false
     }
     if (!formData.name.trim()) {
-      setError('Name is required')
+      setError(t('errors.required'))
       return false
     }
     if (!formData.password) {
-      setError('Password is required')
+      setError(t('errors.required'))
       return false
     }
     if (formData.password.length < 6) {
-      setError('Password must be at least 6 characters long')
+      setError(t('errors.weakPassword'))
       return false
     }
     if (formData.password !== formData.confirmPassword) {
-      setError('Passwords do not match')
+      setError(t('errors.passwordMatch'))
       return false
     }
     return true
@@ -88,7 +93,7 @@ export function SignupForm() {
         // Auto-redirect to login after 2 seconds
         setTimeout(() => {
           router.push(
-            '/login?message=Account created successfully. Please sign in.'
+            `/${locale}/login?message=Account created successfully. Please sign in.`
           )
         }, 2000)
       } else {
@@ -102,7 +107,7 @@ export function SignupForm() {
           err.message.includes('already exists') ||
           err.message.includes('USER_CREATION_FAILED')
         ) {
-          setError('Username already exists. Please choose a different one.')
+          setError(t('errors.emailExists'))
         } else if (err.message.includes('INVALID_INPUT')) {
           setError('Please check your input and try again.')
         } else {
@@ -153,7 +158,7 @@ export function SignupForm() {
                 login page shortly.
               </p>
             </div>
-            <Button onClick={() => router.push('/login')} className="w-full">
+            <Button onClick={() => router.push(`/${locale}/login`)} className="w-full">
               Continue to Login
             </Button>
           </div>
@@ -165,19 +170,19 @@ export function SignupForm() {
   return (
     <Card className="w-full max-w-md">
       <CardHeader className="space-y-1">
-        <CardTitle className="text-2xl text-center">Sign up</CardTitle>
+        <CardTitle className="text-2xl text-center">{t('title')}</CardTitle>
         <CardDescription className="text-center">
-          Create your account to get started with MiloMCP Studio
+          {t('subtitle')}
         </CardDescription>
       </CardHeader>
       <CardContent>
         <form onSubmit={handleSubmit} className="space-y-4">
           <div className="space-y-2">
-            <Label htmlFor="name">Display Name</Label>
+            <Label htmlFor="name">{t('name')}</Label>
             <Input
               id="name"
               type="text"
-              placeholder="Enter your full name"
+              placeholder={t('name')}
               value={formData.name}
               onChange={handleInputChange('name')}
               required
@@ -186,11 +191,11 @@ export function SignupForm() {
           </div>
 
           <div className="space-y-2">
-            <Label htmlFor="username">Username</Label>
+            <Label htmlFor="username">{t('email')}</Label>
             <Input
               id="username"
               type="text"
-              placeholder="Choose a username"
+              placeholder={t('email')}
               value={formData.username}
               onChange={handleInputChange('username')}
               required
@@ -200,12 +205,12 @@ export function SignupForm() {
           </div>
 
           <div className="space-y-2">
-            <Label htmlFor="password">Password</Label>
+            <Label htmlFor="password">{t('password')}</Label>
             <div className="relative">
               <Input
                 id="password"
                 type={showPassword ? 'text' : 'password'}
-                placeholder="Create a password"
+                placeholder={t('password')}
                 value={formData.password}
                 onChange={handleInputChange('password')}
                 required
@@ -229,12 +234,12 @@ export function SignupForm() {
           </div>
 
           <div className="space-y-2">
-            <Label htmlFor="confirmPassword">Confirm Password</Label>
+            <Label htmlFor="confirmPassword">{t('confirmPassword')}</Label>
             <div className="relative">
               <Input
                 id="confirmPassword"
                 type={showConfirmPassword ? 'text' : 'password'}
-                placeholder="Confirm your password"
+                placeholder={t('confirmPassword')}
                 value={formData.confirmPassword}
                 onChange={handleInputChange('confirmPassword')}
                 required
@@ -270,7 +275,7 @@ export function SignupForm() {
                 <span>Creating account...</span>
               </div>
             ) : (
-              'Create Account'
+              t('submit')
             )}
           </Button>
 

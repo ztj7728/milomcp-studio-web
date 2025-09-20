@@ -3,8 +3,10 @@
 import { useSession } from 'next-auth/react'
 import { useRouter, useSearchParams } from 'next/navigation'
 import { useEffect, Suspense } from 'react'
+import { useTranslations } from 'next-intl'
 import { SignupForm } from '@/components/auth/signup-form'
 import Link from 'next/link'
+import { useParams } from 'next/navigation'
 
 // Disable static generation for this page
 export const dynamic = 'force-dynamic'
@@ -13,7 +15,10 @@ function SignupPageContent() {
   const { data: session, status } = useSession()
   const router = useRouter()
   const searchParams = useSearchParams()
-  const callbackUrl = searchParams.get('callbackUrl') || '/dashboard'
+  const params = useParams()
+  const locale = params.locale as string
+  const t = useTranslations('signup')
+  const callbackUrl = searchParams.get('callbackUrl') || `/${locale}/dashboard`
 
   useEffect(() => {
     if (status === 'authenticated') {
@@ -35,20 +40,14 @@ function SignupPageContent() {
 
   return (
     <div className="space-y-6">
-      <div className="text-center">
-        <h1 className="text-3xl font-bold">Create Account</h1>
-        <p className="text-muted-foreground mt-2">
-          Join MiloMCP Studio and start building with powerful tools
-        </p>
-      </div>
       <SignupForm />
       <div className="text-center text-sm text-muted-foreground">
-        Already have an account?{' '}
+        {t('hasAccount')}{' '}
         <Link
-          href="/login"
+          href={`/${locale}/login`}
           className="font-medium text-primary hover:underline"
         >
-          Sign in
+          {t('signIn')}
         </Link>
       </div>
     </div>

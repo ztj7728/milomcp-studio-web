@@ -3,6 +3,7 @@
 import { runtimeConfig } from '@/lib/runtime-config'
 import { useState } from 'react'
 import { useSession } from 'next-auth/react'
+import { useParams } from 'next/navigation'
 import {
   Card,
   CardContent,
@@ -35,6 +36,8 @@ import {
 export default function DashboardPage() {
   const [selectedTokenId, setSelectedTokenId] = useState<string>('')
   const [copied, setCopied] = useState(false)
+  const params = useParams()
+  const locale = params.locale as string
   const { data: session } = useSession()
   const { data: tools, isLoading: toolsLoading, error: toolsError } = useTools()
   const { data: files, isLoading: filesLoading, error: filesError } = useFiles()
@@ -179,7 +182,7 @@ export default function DashboardPage() {
                 <div className="text-sm text-muted-foreground p-3 border rounded bg-muted/50">
                   No API tokens available. Create one in the{' '}
                   <a
-                    href="/dashboard/tokens"
+                    href={`/${locale}/dashboard/tokens`}
                     className="text-primary hover:underline"
                   >
                     Tokens page

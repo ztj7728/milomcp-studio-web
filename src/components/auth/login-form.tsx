@@ -3,6 +3,7 @@
 import { useState } from 'react'
 import { signIn } from 'next-auth/react'
 import { useRouter } from 'next/navigation'
+import { useTranslations } from 'next-intl'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
@@ -26,6 +27,7 @@ export function LoginForm({ callbackUrl = '/dashboard' }: LoginFormProps) {
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState('')
   const router = useRouter()
+  const t = useTranslations('login')
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
@@ -42,9 +44,7 @@ export function LoginForm({ callbackUrl = '/dashboard' }: LoginFormProps) {
 
       if (result?.error) {
         if (result.error === 'CredentialsSignin') {
-          setError(
-            'Invalid username or password. Please check your credentials and try again.'
-          )
+          setError(t('errors.invalid'))
         } else {
           setError('An error occurred during login. Please try again.')
         }
@@ -66,19 +66,19 @@ export function LoginForm({ callbackUrl = '/dashboard' }: LoginFormProps) {
   return (
     <Card className="w-full max-w-md">
       <CardHeader className="space-y-1">
-        <CardTitle className="text-2xl text-center">Sign in</CardTitle>
+        <CardTitle className="text-2xl text-center">{t('title')}</CardTitle>
         <CardDescription className="text-center">
-          Enter your credentials to access MiloMCP Studio
+          {t('subtitle')}
         </CardDescription>
       </CardHeader>
       <CardContent>
         <form onSubmit={handleSubmit} className="space-y-4">
           <div className="space-y-2">
-            <Label htmlFor="username">Username</Label>
+            <Label htmlFor="username">{t('email')}</Label>
             <Input
               id="username"
               type="text"
-              placeholder="Enter your username"
+              placeholder={t('email')}
               value={formData.username}
               onChange={(e) =>
                 setFormData({ ...formData, username: e.target.value })
@@ -88,11 +88,11 @@ export function LoginForm({ callbackUrl = '/dashboard' }: LoginFormProps) {
             />
           </div>
           <div className="space-y-2">
-            <Label htmlFor="password">Password</Label>
+            <Label htmlFor="password">{t('password')}</Label>
             <Input
               id="password"
               type="password"
-              placeholder="Enter your password"
+              placeholder={t('password')}
               value={formData.password}
               onChange={(e) =>
                 setFormData({ ...formData, password: e.target.value })
@@ -107,7 +107,7 @@ export function LoginForm({ callbackUrl = '/dashboard' }: LoginFormProps) {
             </div>
           )}
           <Button type="submit" className="w-full" disabled={loading}>
-            {loading ? 'Signing in...' : 'Sign in'}
+            {loading ? 'Signing in...' : t('submit')}
           </Button>
         </form>
       </CardContent>
