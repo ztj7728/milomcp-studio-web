@@ -9,7 +9,7 @@ const intlMiddleware = createIntlMiddleware({
   locales,
   defaultLocale,
   localePrefix: 'always',
-  localeDetection: false, // Disable automatic locale detection
+  localeDetection: true, // Enable automatic locale detection
 })
 
 function stripLocaleFromPathname(pathname: string): string {
